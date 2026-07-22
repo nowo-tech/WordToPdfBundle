@@ -4,6 +4,22 @@
 
 *(none yet)*
 
+## To 1.1.1
+
+No package API changes. Safe to upgrade with:
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+### Demo-only
+
+- If `composer update` in `demo/symfony8` fails with “requires php >=8.5 but your php version (8.4.x)”, rebuild the image (`make -C demo/symfony8 build`) so it matches FrankenPHP **PHP 8.5**. The demo lockfile platform is now `>=8.5`.
+
+### Breaking changes
+
+None.
+
 ## To 1.1.0
 
 No breaking public API changes. Safe to upgrade with:

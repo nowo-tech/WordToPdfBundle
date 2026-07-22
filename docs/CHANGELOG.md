@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-07-22
+
+### Fixed
+
+- Demo `composer.lock` / `composer.json` synced for FrankenPHP **PHP 8.5** (`platform` `>=8.5`, path package ref, `symfony/mime`). Rebuild the demo image if a local container still reports PHP 8.4.
+- Rector skip for `RemoveUselessReturnTagRector` / `RemoveDuplicatedReturnSelfDocblockRector` so **REQ-CS-001** `@return` PHPDoc is preserved and `make release-check` stays green.
+
+### Compatibility
+
+- Unchanged from 1.1.0.
+
 ## [1.1.0] - 2026-07-22
 
 ### Added
@@ -55,6 +66,7 @@ First stable release.
 - System: **LibreOffice Writer** (`libreoffice-writer` / `soffice`) on the host or container
 - Demo image: FrankenPHP **PHP 8.4** (Symfony 8.1)
 
-[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.1.0
 [1.0.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.0.0
