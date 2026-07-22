@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\WordToPdfBundle\Converter;
 
 use Nowo\WordToPdfBundle\Exception\InvalidProfileException;
+use Nowo\WordToPdfBundle\Naming\PdfNaming;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 
 /**
@@ -55,6 +56,29 @@ interface WordToPdfConverterInterface
      * @return ConvertedPdf
      */
     public function convertWithInlineProfile(string $sourcePath, array $profileConfig): ConvertedPdf;
+
+    /**
+     * Converts several Word files in order (fail-fast).
+     *
+     * Pass a list of absolute paths, or a map of path => output PDF filename.
+     * Explicit map filenames override {@see PdfNaming}. On failure, previously
+     * converted PDFs are disposed before the exception is rethrown.
+     *
+     * @param iterable<array-key, string> $sources List of paths, or path => PDF filename
+     * @param PdfNaming|null $naming Naming strategy (default: keep Word basename)
+     * @param array<string, mixed> $options Same shape as a single YAML profile (subset allowed)
+     * @param string|null $profile Base profile key, or null for the default
+     *
+     * @throws InvalidProfileException if the profile does not exist
+     *
+     * @return list<ConvertedPdf>
+     */
+    public function convertMany(
+        iterable $sources,
+        ?PdfNaming $naming = null,
+        array $options = [],
+        ?string $profile = null,
+    ): array;
 
     /**
      * Asserts LibreOffice Writer is installed and ready for the given (or default) profile.

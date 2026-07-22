@@ -38,6 +38,17 @@ final class ConfigurationTest extends TestCase
         self::assertSame('pdf:writer_pdf_Export', $processed['profiles']['default']['filter']);
     }
 
+    public function testDefaultTimeoutIsProcessTimeoutConvention(): void
+    {
+        $processed = (new Processor())->processConfiguration(new Configuration(), [[
+            'profiles' => [
+                'default' => [],
+            ],
+        ]]);
+
+        self::assertSame(180, $processed['profiles']['default']['timeout']);
+    }
+
     public function testInvalidEngine(): void
     {
         $this->expectException(InvalidConfigurationException::class);

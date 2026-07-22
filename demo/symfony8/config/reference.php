@@ -754,7 +754,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     profiles?: array<string, array{ // Default: []
  *         binary_path?: scalar|Param|null, // Absolute path to soffice/libreoffice. Null = auto-detect. // Default: null
  *         temp_dir?: scalar|Param|null, // Writable temp directory. Null = sys_get_temp_dir(). // Default: null
- *         timeout?: int|Param, // LibreOffice process timeout in seconds. // Default: 120
+ *         timeout?: int|Param, // LibreOffice Symfony Process timeout in seconds (wall-clock and idle). Shared Nowo default: PROCESS_TIMEOUT=180. // Default: 180
  *         max_source_bytes?: int|Param, // Maximum source Word file size in bytes (default 50 MiB). // Default: 52428800
  *         check_on_boot?: bool|Param, // When true, assert LibreOffice Writer is available when the kernel boots. // Default: false
  *         boot_failure?: "exception"|"warning"|Param, // When check_on_boot fails: throw exception or log a warning. // Default: "exception"

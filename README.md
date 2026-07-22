@@ -14,6 +14,7 @@
 Symfony bundle that converts **Microsoft Word** (`.docx` / `.doc`) to **PDF** using **LibreOffice Writer** (`soffice` headless) for print-quality layout fidelity:
 
 - **named YAML profiles** + **default profile** + deep merge with per-call options, or **`convertWithInlineProfile()`**;
+- **batch conversion** via **`convertMany()`** with **`PdfNaming`** (keep / prefix / suffix / surround / fixed / callback, or path ⇒ filename map);
 - **runtime check** that **LibreOffice Writer** is installed (`nowo:word-to-pdf:check`); fails with install hints if missing;
 - works under **PHP-FPM** and **FrankenPHP** (Symfony Process / `proc_open`);
 - Symfony-friendly export: streamed/binary responses, local path, optional **Flysystem**.
@@ -74,18 +75,28 @@ nowo_word_to_pdf:
     default_profile: default
     profiles:
         default:
-            timeout: 120
+            timeout: 180
             export:
                 filename: document.pdf
 ```
 
+Prefer the shared Nowo env (demos and multi-bundle apps):
+
+```yaml
+timeout: '%env(int:PROCESS_TIMEOUT)%'   # PROCESS_TIMEOUT=180 in .env
+```
+
+See [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md#shared-process_timeout-all-nowo-process-based-bundles).
+
 ```php
 use Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface;
 use Nowo\WordToPdfBundle\Export\ExporterInterface;
+use Nowo\WordToPdfBundle\Naming\PdfNaming;
 
 public function download(WordToPdfConverterInterface $converter, ExporterInterface $exporter): Response
 {
     $pdf = $converter->convert('/path/to/contract.docx');
+    // Batch: $converter->convertMany([$pathA, $pathB], PdfNaming::suffix(' [converted]'));
 
     return $exporter->toBinaryResponse($pdf);
 }

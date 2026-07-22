@@ -94,7 +94,7 @@
   </div>
 
   <p class="small text-muted mb-3">
-    FrankenPHP timeout stack (demo): LibreOffice Process <strong>180s</strong>
+    FrankenPHP timeout stack (demo): LibreOffice Process <strong>PROCESS_TIMEOUT</strong> (default <strong>180s</strong>)
     → PHP <code>max_execution_time</code> <strong>240s</strong>
     → Caddy write <strong>250s</strong>; queue wait max <strong>30s</strong>.
     On Process timeout the bundle kills the conversion and orphaned <code>soffice</code> children.
@@ -106,11 +106,16 @@
   </div>
 
   <h2 class="h5">Convert upload</h2>
+  <p class="small text-secondary">
+    Upload one or more <strong>.docx</strong> / <strong>.doc</strong> files (multipart, max {{ maxUploads }}) — not PDF.
+    One file returns a PDF; several return a ZIP of PDFs named <code>{name} [converted].pdf</code>.
+  </p>
   {% if error %}
     <pre class="text-danger" style="white-space:pre-wrap;">{{ error }}</pre>
   {% endif %}
   {{ form_start(form) }}
-    {{ form_row(form.document) }}
+    {{ form_row(form.documents) }}
+    {{ form_errors(form) }}
     {{ form_row(form.convert) }}
   {{ form_end(form) }}
 

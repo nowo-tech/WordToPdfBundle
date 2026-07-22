@@ -26,6 +26,33 @@ public function run(): void
 
 Supported inputs: `.docx`, `.doc`.
 
+## Convert many (batch) + PDF naming
+
+```php
+use Nowo\WordToPdfBundle\Naming\PdfNaming;
+
+// List of paths + naming strategy (default PdfNaming::keep() → {basename}.pdf)
+$pdfs = $this->converter->convertMany(
+    ['/var/docs/a.docx', '/var/docs/b.docx'],
+    PdfNaming::suffix(' [converted]'),
+);
+// a [converted].pdf, b [converted].pdf
+
+// Prefix / surround
+PdfNaming::prefix('OUT-');                      // OUT-contract.pdf
+PdfNaming::surround('OUT-', ' [converted]');    // OUT-contract [converted].pdf
+PdfNaming::fixed('report.pdf');                 // same name for every item
+PdfNaming::callback(fn (string $path, int $i): string => "doc-{$i}");
+
+// Explicit path => filename map (overrides PdfNaming)
+$pdfs = $this->converter->convertMany([
+    '/var/docs/a.docx' => 'Contract A.pdf',
+    '/var/docs/b.docx' => 'Contract B.pdf',
+]);
+```
+
+`convertMany` is **fail-fast**: if one file fails, previously converted PDFs are `dispose()`d and the exception is rethrown. Single-file methods (`convert`, `convertWithOptions`, …) are unchanged.
+
 ## Export responses
 
 ```php

@@ -61,12 +61,31 @@ LibreOffice conversion is a **blocking** `proc_open` call. Under FrankenPHP a hu
 
 | Layer | Demo default | Role |
 |-------|--------------|------|
-| `nowo_word_to_pdf.profiles.*.timeout` | **180s** | Symfony Process wall-clock **and** idle timeout; on expiry the runner `stop(0)`s the process and `pkill`s orphans matching the conversion `UserInstallation` profile |
-| PHP `max_execution_time` / `max_input_time` | **240s** | Set via `frankenphp { php_ini … }` and `docker/php-dev.ini` — must be **greater** than the profile timeout so Process can fire first |
+| **`PROCESS_TIMEOUT`** → `nowo_word_to_pdf.profiles.*.timeout` | **180s** | Shared Nowo env for Symfony Process wall-clock **and** idle timeout. On expiry the runner `stop(0)`s the process and `pkill`s orphans matching the conversion `UserInstallation` profile. Bundle default when unset in YAML is also **180**. |
+| PHP `max_execution_time` / `max_input_time` | **240s** | Set via `frankenphp { php_ini … }` and `docker/php-dev.ini` — must be **greater** than the Process timeout so Process can fire first |
 | Caddy `servers.timeouts.write` | **250s** | HTTP write deadline above PHP |
 | FrankenPHP `max_wait_time` | **30s** | Max time a request waits for a free PHP thread before **504** (limits backlog when workers are busy converting) |
 
-When raising `timeout` in YAML, raise PHP + Caddy write timeouts in the same step.
+### Shared `PROCESS_TIMEOUT` (all Nowo process-based bundles)
+
+Use the **same** `.env` variable across demos/apps that spawn external tools via Symfony Process:
+
+```bash
+# .env / .env.example
+PROCESS_TIMEOUT=180
+```
+
+```yaml
+# config/packages/<bundle>.yaml
+profiles:
+    default:
+        timeout: '%env(int:PROCESS_TIMEOUT)%'
+```
+
+- **Name:** `PROCESS_TIMEOUT` (do not invent per-bundle aliases such as `LIBREOFFICE_TIMEOUT` or `SOFFICE_TIMEOUT`).
+- **Default:** `180` seconds.
+- **Hierarchy:** `PROCESS_TIMEOUT` &lt; PHP `max_execution_time` (240) &lt; Caddy write (250).
+- When raising `PROCESS_TIMEOUT`, raise PHP + Caddy write timeouts in the same step.
 
 ## Demo page
 
@@ -74,8 +93,9 @@ The demo exposes `/` that:
 
 1. Shows LibreOffice Writer **runtime check** status (`RuntimeRequirementsChecker::diagnose()`).
 2. Highlights **`/stress.pdf`** — converts `public/demo/stress-styles.docx`, a fidelity gauntlet (images, tables, styles, sections, columns, headers/footers, fields, unicode). The demo home page lists the full inventory.
-3. Accepts upload of `.docx` / `.doc` and returns a PDF download.
-4. Offers a minimal **`/sample.pdf`** (`sample.docx`).
+3. Accepts **multipart** upload of one or more `.docx` / `.doc` files (max 10) via `convertMany()` + `PdfNaming::suffix(' [converted]')`. One file returns a PDF; several return a ZIP of PDFs.
+4. Flashes a danger alert when the upload extension is not `.docx` / `.doc`.
+5. Offers a minimal **`/sample.pdf`** (`sample.docx`).
 
 Regenerate the stress DOCX when needed (requires `python-docx` + Pillow):
 

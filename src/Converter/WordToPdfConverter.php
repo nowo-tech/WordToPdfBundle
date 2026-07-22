@@ -8,15 +8,19 @@ use Nowo\WordToPdfBundle\Config\ProfileResolver;
 use Nowo\WordToPdfBundle\Config\ResolvedConfig;
 use Nowo\WordToPdfBundle\Exception\ConversionFailedException;
 use Nowo\WordToPdfBundle\Exception\UnsupportedFormatException;
+use Nowo\WordToPdfBundle\Naming\PdfNaming;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 use Nowo\WordToPdfBundle\Runtime\LibreOfficeProcessRunner;
 use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
+use Throwable;
 
+use function array_replace_recursive;
 use function filesize;
 use function function_exists;
 use function in_array;
 use function is_file;
 use function is_readable;
+use function is_string;
 use function pathinfo;
 use function sprintf;
 use function str_ends_with;
@@ -106,6 +110,50 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
     /**
      * {@inheritdoc}
      *
+     * @param iterable<array-key, string> $sources List of paths, or path => PDF filename
+     * @param PdfNaming|null $naming Naming strategy (default: keep Word basename)
+     * @param array<string, mixed> $options Same shape as a single YAML profile (subset allowed)
+     * @param string|null $profile Base profile key, or null for the default
+     *
+     * @return list<ConvertedPdf>
+     */
+    public function convertMany(
+        iterable $sources,
+        ?PdfNaming $naming = null,
+        array $options = [],
+        ?string $profile = null,
+    ): array {
+        $naming ??= PdfNaming::keep();
+        $jobs = $this->normalizeBatchSources($sources);
+        if ($jobs === []) {
+            throw new ConversionFailedException('convertMany requires at least one Word source path.');
+        }
+
+        $converted = [];
+        try {
+            foreach ($jobs as $index => $job) {
+                $filename = $job['filename'] ?? $naming->resolve($job['path'], $index);
+                $filename = PdfNaming::ensurePdfExtension($filename);
+
+                $itemOptions = array_replace_recursive($options, [
+                    'export' => ['filename' => $filename],
+                ]);
+
+                $converted[] = $this->convertWithOptions($job['path'], $itemOptions, $profile);
+            }
+        } catch (Throwable $e) {
+            foreach ($converted as $pdf) {
+                $pdf->dispose();
+            }
+            throw $e;
+        }
+
+        return $converted;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
      * @param string|null $profile Profile key, or null for the default
      *
      * @return void
@@ -163,5 +211,30 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
                 }
             }
         }
+    }
+
+    /**
+     * @param iterable<array-key, string> $sources
+     *
+     * @return list<array{path: string, filename: string|null}>
+     */
+    private function normalizeBatchSources(iterable $sources): array
+    {
+        $items = [];
+        foreach ($sources as $key => $value) {
+            if ($value === '') {
+                throw new ConversionFailedException('convertMany sources must be non-empty string paths (or path => filename).');
+            }
+
+            // Associative map: path => output filename (string keys)
+            if (is_string($key)) {
+                $items[] = ['path' => $key, 'filename' => $value];
+                continue;
+            }
+
+            $items[] = ['path' => $value, 'filename' => null];
+        }
+
+        return $items;
     }
 }

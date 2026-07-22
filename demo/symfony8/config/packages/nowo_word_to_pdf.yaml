@@ -3,10 +3,11 @@ nowo_word_to_pdf:
     default_profile: default
     profiles:
         default:
-            # Hard soffice wall-clock (Symfony Process). Keep below PHP max_execution_time (240)
-            # and Caddy write timeout (250s) configured in docker/frankenphp/Caddyfile*.
-            timeout: 180
+            # Shared Nowo Process limit (PROCESS_TIMEOUT). Keep below PHP max_execution_time (240)
+            # and Caddy write timeout (250s) — see docs/DEMO-FRANKENPHP.md (REQ-RUNTIME-001).
+            timeout: '%env(int:PROCESS_TIMEOUT)%'
             check_on_boot: true
             boot_failure: warning
             export:
-                filename: converted.pdf
+                # Overridden per request from the Word basename + " [converted].pdf"
+                filename: document [converted].pdf

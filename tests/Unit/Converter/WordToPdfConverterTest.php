@@ -9,9 +9,11 @@ use Nowo\WordToPdfBundle\Converter\WordToPdfConverter;
 use Nowo\WordToPdfBundle\Exception\ConversionFailedException;
 use Nowo\WordToPdfBundle\Exception\MissingDependencyException;
 use Nowo\WordToPdfBundle\Exception\UnsupportedFormatException;
+use Nowo\WordToPdfBundle\Naming\PdfNaming;
 use Nowo\WordToPdfBundle\Runtime\LibreOfficeProcessRunner;
 use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 final class WordToPdfConverterTest extends TestCase
 {
@@ -173,6 +175,95 @@ final class WordToPdfConverterTest extends TestCase
         @unlink($docx);
     }
 
+    public function testConvertManyWithSuffixAndExplicitMap(): void
+    {
+        $docx1 = $this->makeFakeDocxNamed('alpha.docx');
+        $docx2 = $this->makeFakeDocxNamed('beta.docx');
+        $out1  = sys_get_temp_dir() . '/wtp_out_' . uniqid('', true) . '.pdf';
+        $out2  = sys_get_temp_dir() . '/wtp_out_' . uniqid('', true) . '.pdf';
+        file_put_contents($out1, '%PDF-a');
+        file_put_contents($out2, '%PDF-b');
+
+        $checker = $this->createMock(RuntimeRequirementsChecker::class);
+        $checker->method('assertReady')->willReturn('/usr/bin/soffice');
+        $runner = $this->createMock(LibreOfficeProcessRunner::class);
+        $runner->expects(self::exactly(2))->method('convert')->willReturnOnConsecutiveCalls($out1, $out2);
+
+        $converter = new WordToPdfConverter(
+            new ProfileResolver(['default' => []], 'default'),
+            $checker,
+            $runner,
+        );
+
+        $batch = $converter->convertMany([$docx1, $docx2], PdfNaming::suffix(' [converted]'));
+        self::assertCount(2, $batch);
+        self::assertSame('alpha [converted].pdf', $batch[0]->suggestedFilename());
+        self::assertSame('beta [converted].pdf', $batch[1]->suggestedFilename());
+        foreach ($batch as $pdf) {
+            $pdf->dispose();
+        }
+
+        $out3 = sys_get_temp_dir() . '/wtp_out_' . uniqid('', true) . '.pdf';
+        file_put_contents($out3, '%PDF-c');
+        $runnerMap = $this->createMock(LibreOfficeProcessRunner::class);
+        $runnerMap->method('convert')->willReturn($out3);
+        $converterMap = new WordToPdfConverter(
+            new ProfileResolver(['default' => []], 'default'),
+            $checker,
+            $runnerMap,
+        );
+        $mapped = $converterMap->convertMany([$docx1 => 'Custom Name.pdf'], PdfNaming::keep());
+        self::assertSame('Custom Name.pdf', $mapped[0]->suggestedFilename());
+        $mapped[0]->dispose();
+
+        @unlink($docx1);
+        @unlink($docx2);
+    }
+
+    public function testConvertManyFailFastDisposesPrevious(): void
+    {
+        $docx1 = $this->makeFakeDocxNamed('ok.docx');
+        $docx2 = $this->makeFakeDocxNamed('bad.docx');
+        $out1  = sys_get_temp_dir() . '/wtp_out_' . uniqid('', true) . '.pdf';
+        file_put_contents($out1, '%PDF');
+
+        $checker = $this->createMock(RuntimeRequirementsChecker::class);
+        $checker->method('assertReady')->willReturn('/usr/bin/soffice');
+        $runner = $this->createMock(LibreOfficeProcessRunner::class);
+        $runner->expects(self::once())->method('convert')->willReturn($out1);
+
+        $converter = new WordToPdfConverter(
+            new ProfileResolver(['default' => []], 'default'),
+            $checker,
+            $runner,
+        );
+
+        try {
+            $converter->convertMany([$docx1, '/tmp/missing-batch.docx']);
+            self::fail('Expected ConversionFailedException');
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ConversionFailedException::class, $e);
+            self::assertFileDoesNotExist($out1);
+        } finally {
+            @unlink($docx1);
+            @unlink($docx2);
+        }
+    }
+
+    public function testConvertManyEmptyThrows(): void
+    {
+        $converter = $this->createConverter();
+        $this->expectException(ConversionFailedException::class);
+        $converter->convertMany([]);
+    }
+
+    public function testConvertManyBlankPathThrows(): void
+    {
+        $converter = $this->createConverter();
+        $this->expectException(ConversionFailedException::class);
+        $converter->convertMany(['']);
+    }
+
     private function createConverter(): WordToPdfConverter
     {
         return new WordToPdfConverter(
@@ -184,7 +275,12 @@ final class WordToPdfConverterTest extends TestCase
 
     private function makeFakeDocx(): string
     {
-        $path = sys_get_temp_dir() . '/wtp_' . uniqid('', true) . '.docx';
+        return $this->makeFakeDocxNamed('wtp_' . uniqid('', true) . '.docx');
+    }
+
+    private function makeFakeDocxNamed(string $basename): string
+    {
+        $path = sys_get_temp_dir() . '/' . $basename;
         // Minimal ZIP (docx is a zip) — PK header
         file_put_contents($path, "PK\x03\x04fake-docx-content-for-tests");
 

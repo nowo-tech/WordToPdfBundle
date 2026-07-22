@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-07-22
+
+### Added
+
+- **`convertMany()`** on `WordToPdfConverterInterface` for batch Word → PDF conversion (fail-fast; disposes prior PDFs on error).
+- **`PdfNaming`** strategies: `keep()`, `prefix()`, `suffix()`, `surround()`, `fixed()`, `callback()`, plus path ⇒ filename maps that override naming.
+- Demo: multipart multi-upload (max 10), flash on invalid extension, download names `{word} [converted].pdf`, ZIP when N&gt;1; uses `convertMany` + `PdfNaming::suffix(' [converted]')`.
+- Demo requires `symfony/mime`; form CSRF uses classic session tokens (no Stimulus cookie CSRF).
+- Shared env **`PROCESS_TIMEOUT=180`** documented for Nowo process-based bundles (`DEMO-FRANKENPHP.md`).
+
+### Changed
+
+- Profile **`timeout`** default raised from **120** to **180** seconds (**REQ-RUNTIME-001**). Demo wires `timeout: '%env(int:PROCESS_TIMEOUT)%'`.
+
+### Compatibility
+
+- Unchanged: PHP `>= 8.2`, `< 8.6`; Symfony `^7.0 || ^8.0`. Additive API only (no BC break).
+
 ## [1.1.1] - 2026-07-22
 
 ### Fixed

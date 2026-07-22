@@ -42,7 +42,7 @@ It does **not** expose HTTP routes by itself; the host application controls auth
 ### Process / resource abuse
 
 - **Risk**: Huge Word files or hanging LibreOffice processes exhaust CPU/disk.
-- **Mitigation**: `max_source_bytes` (default 50 MiB), `timeout` per profile, isolated temp workspace deleted after conversion.
+- **Mitigation**: `max_source_bytes` (default 50 MiB), `timeout` per profile (default **180s**), isolated temp workspace deleted after conversion. `convertMany()` is fail-fast and disposes PDFs already produced in the batch when a later item fails.
 
 ### Path traversal / sensitive file read
 

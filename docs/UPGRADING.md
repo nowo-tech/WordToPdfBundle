@@ -4,6 +4,24 @@
 
 *(none yet)*
 
+## To 1.2.0
+
+No breaking public API changes. Safe to upgrade with:
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+### Behavioral notes (non-breaking)
+
+- Default profile **`timeout`** is now **180** seconds (was 120). Apps that relied on the previous default without setting `timeout` explicitly get a longer conversion window.
+- Demos standardize on shared env **`PROCESS_TIMEOUT=180`** → `timeout: '%env(int:PROCESS_TIMEOUT)%'`. Other Nowo bundles that spawn Symfony Process should reuse the same variable name and default — see [DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md#shared-process_timeout-all-nowo-process-based-bundles).
+- New optional API: `convertMany()` + `PdfNaming` for batch conversion and output naming (keep / prefix / suffix / surround / fixed / callback, or path ⇒ filename map). Existing single-file methods are unchanged. See [USAGE.md](USAGE.md#convert-many-batch--pdf-naming).
+
+### Breaking changes
+
+None.
+
 ## To 1.1.1
 
 No package API changes. Safe to upgrade with:
@@ -71,7 +89,7 @@ nowo_word_to_pdf:
     default_profile: default
     profiles:
         default:
-            timeout: 120
+            timeout: 180
             export:
                 filename: document.pdf
 ```

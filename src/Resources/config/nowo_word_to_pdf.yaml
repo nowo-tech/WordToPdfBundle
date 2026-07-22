@@ -10,7 +10,7 @@ nowo_word_to_pdf:
         default:
             binary_path: null
             temp_dir: null
-            timeout: 120
+            timeout: 180
             max_source_bytes: 52428800
             check_on_boot: false
             boot_failure: exception

@@ -10,7 +10,8 @@ nowo_word_to_pdf:
         default:
             binary_path: null
             temp_dir: null
-            timeout: 120
+            # Prefer %env(int:PROCESS_TIMEOUT)% (shared Nowo default: 180) when the host app defines PROCESS_TIMEOUT.
+            timeout: 180
             max_source_bytes: 52428800
             check_on_boot: false
             boot_failure: exception

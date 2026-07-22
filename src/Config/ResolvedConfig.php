@@ -59,7 +59,7 @@ final readonly class ResolvedConfig
         return new self(
             binaryPath: isset($data['binary_path']) && is_string($data['binary_path']) ? $data['binary_path'] : null,
             tempDir: isset($data['temp_dir']) && is_string($data['temp_dir']) ? $data['temp_dir'] : null,
-            timeout: isset($data['timeout']) && is_int($data['timeout']) ? $data['timeout'] : 120,
+            timeout: isset($data['timeout']) && is_int($data['timeout']) ? $data['timeout'] : 180,
             maxSourceBytes: isset($data['max_source_bytes']) && is_int($data['max_source_bytes']) ? $data['max_source_bytes'] : 52428800,
             checkOnBoot: (bool) ($data['check_on_boot'] ?? false),
             bootFailure: isset($data['boot_failure']) && is_string($data['boot_failure']) ? $data['boot_failure'] : 'exception',
