@@ -1,0 +1,22 @@
+# WordToPdfBundle — Symfony 8 demo (FrankenPHP + LibreOffice Writer)
+
+See also [docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md) for worker mode, troubleshooting, and conventions.
+
+## Start
+
+```bash
+cp .env.example .env
+make up
+# Demo started at: http://localhost:8022
+```
+
+## What it shows
+
+- Upload Word → PDF download
+- Runtime status for LibreOffice Writer
+- Sample conversion of `public/demo/sample.docx`
+- Dev tools: Web Profiler + Twig Inspector
+
+## System package
+
+The Dockerfile installs LibreOffice (`apk add libreoffice`). Without it, conversion fails with install instructions.

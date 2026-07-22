@@ -1,0 +1,46 @@
+# WordToPdfBundle — Word → PDF via LibreOffice Writer (soffice)
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Nowo\WordToPdfBundle\Runtime\LibreOfficeBinaryLocator: ~
+    Nowo\WordToPdfBundle\Runtime\LibreOfficeProcessRunner: ~
+    Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker: ~
+
+    Nowo\WordToPdfBundle\Config\ProfileResolver:
+        arguments:
+            $profiles: '%nowo_word_to_pdf.profiles%'
+            $defaultProfile: '%nowo_word_to_pdf.default_profile%'
+
+    Nowo\WordToPdfBundle\Converter\WordToPdfConverter:
+        public: true
+
+    Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface:
+        alias: Nowo\WordToPdfBundle\Converter\WordToPdfConverter
+        public: true
+
+    Nowo\WordToPdfBundle\Export\PdfExporter:
+        public: true
+        arguments:
+            $flysystem: null
+
+    Nowo\WordToPdfBundle\Export\ExporterInterface:
+        alias: Nowo\WordToPdfBundle\Export\PdfExporter
+        public: true
+
+    Nowo\WordToPdfBundle\Command\CheckRuntimeCommand:
+        arguments:
+            $checker: '@Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker'
+            $profileResolver: '@Nowo\WordToPdfBundle\Config\ProfileResolver'
+
+    Nowo\WordToPdfBundle\EventListener\RuntimeBootCheckListener:
+        arguments:
+            $enabled: false
+            $bootFailure: 'exception'
+            $requirementsChecker: '@Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker'
+            $profileResolver: '@Nowo\WordToPdfBundle\Config\ProfileResolver'
+            $logger: '@?logger'
+        tags:
+            - { name: kernel.event_subscriber }

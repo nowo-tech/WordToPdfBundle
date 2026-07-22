@@ -1,0 +1,8 @@
+# CODEOWNERS for WordToPdfBundle
+* @HecFranco
+
+/.github/ @HecFranco
+
+/src/ @HecFranco
+
+/tests/ @HecFranco

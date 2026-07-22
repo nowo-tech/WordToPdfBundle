@@ -1,0 +1,10 @@
+nowo_word_to_pdf:
+    engine: libreoffice
+    default_profile: default
+    profiles:
+        default:
+            timeout: 180
+            check_on_boot: true
+            boot_failure: warning
+            export:
+                filename: converted.pdf

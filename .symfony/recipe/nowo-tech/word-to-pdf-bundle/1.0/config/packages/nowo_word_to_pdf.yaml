@@ -1,0 +1,23 @@
+# Copy into your application as config/packages/nowo_word_to_pdf.yaml
+#
+# System requirement: LibreOffice Writer (e.g. apt install libreoffice-writer).
+# Verify: php bin/console nowo:word-to-pdf:check
+
+nowo_word_to_pdf:
+    engine: libreoffice
+    default_profile: default
+    profiles:
+        default:
+            binary_path: null
+            temp_dir: null
+            timeout: 120
+            max_source_bytes: 52428800
+            check_on_boot: false
+            boot_failure: exception
+            min_version: null
+            filter: pdf:writer_pdf_Export
+            export:
+                filename: document.pdf
+                storage: memory
+                local_path: null
+                flysystem_adapter: null

@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}WordToPdfBundle demo{% endblock %}
+
+{% block body %}
+<section style="max-width:42rem;margin:2rem auto;font-family:system-ui,sans-serif;">
+  <h1>WordToPdfBundle</h1>
+  <p>Convert <code>.docx</code> / <code>.doc</code> to PDF via LibreOffice Writer. Works with PHP-FPM and FrankenPHP.</p>
+
+  <h2>Runtime check</h2>
+  {% if runtime.ok %}
+    <p style="color:green;"><strong>OK</strong> — {{ runtime.message }}</p>
+  {% else %}
+    <pre style="color:#b00020;white-space:pre-wrap;">{{ runtime.message }}</pre>
+  {% endif %}
+
+  <h2>Convert upload</h2>
+  {% if error %}
+    <pre style="color:#b00020;white-space:pre-wrap;">{{ error }}</pre>
+  {% endif %}
+  {{ form_start(form) }}
+    {{ form_row(form.document) }}
+    {{ form_row(form.convert) }}
+  {{ form_end(form) }}
+
+  <p><a href="{{ path('demo_sample') }}">Download sample.docx as PDF</a></p>
+</section>
+{% endblock %}

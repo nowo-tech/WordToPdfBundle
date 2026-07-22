@@ -1,0 +1,35 @@
+name: word-to-pdf-bundle-demo-symfony-8
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: word-to-pdf-bundle-demo-symfony8-php
+    working_dir: /app
+    ports:
+      - "${PORT:-8022}:80"
+    volumes:
+      - .:/app
+      - ../..:/var/word-to-pdf-bundle
+      - ./docker/frankenphp/Caddyfile.dev:/etc/frankenphp/Caddyfile.dev
+      - ./docker/php-dev.ini:/usr/local/etc/php/conf.d/99-dev.ini:ro
+      - composer-cache:/root/.composer/cache
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+      - APP_ENV=${APP_ENV:-dev}
+      - APP_DEBUG=${APP_DEBUG:-1}
+      - APP_SECRET=${APP_SECRET:-demo-secret}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    networks:
+      - word-to-pdf-demo-network
+
+volumes:
+  composer-cache:
+    driver: local
+
+networks:
+  word-to-pdf-demo-network:
+    driver: bridge

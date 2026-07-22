@@ -1,0 +1,13 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    bootstrapFiles:
+        - vendor/autoload.php
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        -
+            identifier: return.type
+            path: src/Runtime/LibreOfficeBinaryLocator.php
+            message: '#non-empty-string#'
