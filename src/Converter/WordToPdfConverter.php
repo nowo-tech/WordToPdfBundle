@@ -26,15 +26,15 @@ use function strtolower;
 use const FILEINFO_MIME_TYPE;
 use const PATHINFO_EXTENSION;
 
-final class WordToPdfConverter implements WordToPdfConverterInterface
+final readonly class WordToPdfConverter implements WordToPdfConverterInterface
 {
     /** @var list<string> */
     private const SUPPORTED_EXTENSIONS = ['docx', 'doc'];
 
     public function __construct(
-        private readonly ProfileResolver $profileResolver,
-        private readonly RuntimeRequirementsChecker $requirementsChecker,
-        private readonly LibreOfficeProcessRunner $processRunner,
+        private ProfileResolver $profileResolver,
+        private RuntimeRequirementsChecker $requirementsChecker,
+        private LibreOfficeProcessRunner $processRunner,
     ) {
     }
 

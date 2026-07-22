@@ -28,6 +28,7 @@ First stable release.
 - PHP `>= 8.2`, `< 8.6`
 - Symfony `^7.0 || ^8.0` (CI matrix: 7.4, 8.0, 8.1)
 - System: **LibreOffice Writer** (`libreoffice-writer` / `soffice`) on the host or container
+- Demo image: FrankenPHP **PHP 8.4** (Symfony 8.1)
 
 [Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.0.0

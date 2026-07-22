@@ -5,6 +5,9 @@
     "nowo-tech/word-template-bundle": {
         "version": "dev-main"
     },
+    "nowo-tech/word-to-pdf-bundle": {
+        "version": "dev-main"
+    },
     "symfony/console": {
         "version": "8.0",
         "recipe": {

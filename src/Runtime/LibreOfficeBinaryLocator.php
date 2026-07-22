@@ -27,7 +27,7 @@ class LibreOfficeBinaryLocator
     ];
 
     /** @var list<string> */
-    private array $candidatePaths;
+    private readonly array $candidatePaths;
 
     /**
      * @param list<string>|null $candidatePaths

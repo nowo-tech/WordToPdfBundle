@@ -35,7 +35,7 @@ final class LibreOfficeBinaryLocatorTest extends TestCase
         putenv('PATH=' . $dir);
         try {
             $locator = new LibreOfficeBinaryLocator();
-            self::assertSame($script, $locator->locate(null));
+            self::assertSame($script, $locator->locate());
         } finally {
             putenv('PATH=' . ($prev === false ? '' : $prev));
             @unlink($script);
@@ -52,7 +52,7 @@ final class LibreOfficeBinaryLocatorTest extends TestCase
         chmod($script, 0755);
 
         $locator = new LibreOfficeBinaryLocator([$script]);
-        self::assertSame($script, $locator->locate(null));
+        self::assertSame($script, $locator->locate());
 
         @unlink($script);
         @rmdir($dir);
@@ -64,7 +64,7 @@ final class LibreOfficeBinaryLocatorTest extends TestCase
         putenv('PATH=' . PATH_SEPARATOR . '/tmp/no-such-wtp-bin-' . uniqid());
         try {
             $locator = new LibreOfficeBinaryLocator([]);
-            self::assertNull($locator->locate(null));
+            self::assertNull($locator->locate());
         } finally {
             putenv('PATH=' . ($prev === false ? '' : $prev));
         }
@@ -76,7 +76,7 @@ final class LibreOfficeBinaryLocatorTest extends TestCase
         putenv('PATH=');
         try {
             $locator = new LibreOfficeBinaryLocator([]);
-            self::assertNull($locator->locate(null));
+            self::assertNull($locator->locate());
         } finally {
             putenv('PATH=' . ($prev === false ? '' : $prev));
         }

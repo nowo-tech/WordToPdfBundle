@@ -1,5 +1,5 @@
 # FrankenPHP + LibreOffice Writer for Word → PDF demo
-FROM dunglas/frankenphp:1-php8.2-alpine
+FROM dunglas/frankenphp:1-php8.4-alpine
 
 RUN apk add --no-cache git unzip bash libreoffice
 RUN install-php-extensions intl zip fileinfo

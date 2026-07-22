@@ -748,13 +748,25 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     intercept_redirects?: bool|Param, // Default: false
  *     excluded_ajax_paths?: scalar|Param|null, // Default: "^/((index|app(_[\\w]+)?)\\.php/)?_wdt"
  * }
- * @psalm-type NowoWordTemplateConfig = array{
- *     macro_opening?: scalar|Param|null, // Opening delimiter for placeholders in the DOCX (PHPWord TemplateProcessor). // Default: "${"
- *     macro_closing?: scalar|Param|null, // Closing delimiter for placeholders in the DOCX. // Default: "}"
- *     conditional_if_opening?: scalar|Param|null, // Opening delimiter for conditional blocks (before the block name). // Default: "${#if"
- *     conditional_if_closing?: scalar|Param|null, // Closing delimiter for conditional opening markers. // Default: "}"
- *     conditional_endif_opening?: scalar|Param|null, // Opening delimiter for conditional end markers (before the block name). // Default: "${#endif"
- *     conditional_endif_closing?: scalar|Param|null, // Closing delimiter for conditional end markers. // Default: "}"
+ * @psalm-type NowoWordToPdfConfig = array{
+ *     engine?: scalar|Param|null, // Conversion backend: libreoffice (LibreOffice Writer / soffice). // Default: "libreoffice"
+ *     default_profile?: scalar|Param|null, // Default: "default"
+ *     profiles?: array<string, array{ // Default: []
+ *         binary_path?: scalar|Param|null, // Absolute path to soffice/libreoffice. Null = auto-detect. // Default: null
+ *         temp_dir?: scalar|Param|null, // Writable temp directory. Null = sys_get_temp_dir(). // Default: null
+ *         timeout?: int|Param, // LibreOffice process timeout in seconds. // Default: 120
+ *         max_source_bytes?: int|Param, // Maximum source Word file size in bytes (default 50 MiB). // Default: 52428800
+ *         check_on_boot?: bool|Param, // When true, assert LibreOffice Writer is available when the kernel boots. // Default: false
+ *         boot_failure?: "exception"|"warning"|Param, // When check_on_boot fails: throw exception or log a warning. // Default: "exception"
+ *         min_version?: scalar|Param|null, // Optional minimum LibreOffice version (e.g. "24.2"). // Default: null
+ *         filter?: scalar|Param|null, // LibreOffice convert-to filter string. // Default: "pdf:writer_pdf_Export"
+ *         export?: array{
+ *             filename?: scalar|Param|null, // Default: "document.pdf"
+ *             storage?: scalar|Param|null, // Default: "memory"
+ *             local_path?: scalar|Param|null, // Default: null
+ *             flysystem_adapter?: scalar|Param|null, // Default: null
+ *         },
+ *     }>,
  * }
  * @psalm-type NowoTwigInspectorConfig = array{
  *     enabled_extensions?: list<scalar|Param|null>,
@@ -778,7 +790,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     services?: ServicesConfig,
  *     framework?: FrameworkConfig,
  *     twig?: TwigConfig,
- *     nowo_word_template?: NowoWordTemplateConfig,
+ *     nowo_word_to_pdf?: NowoWordToPdfConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -787,7 +799,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig?: TwigConfig,
  *         debug?: DebugConfig,
  *         web_profiler?: WebProfilerConfig,
- *         nowo_word_template?: NowoWordTemplateConfig,
+ *         nowo_word_to_pdf?: NowoWordToPdfConfig,
  *         nowo_twig_inspector?: NowoTwigInspectorConfig,
  *     },
  *     "when@prod"?: array{
@@ -796,7 +808,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         services?: ServicesConfig,
  *         framework?: FrameworkConfig,
  *         twig?: TwigConfig,
- *         nowo_word_template?: NowoWordTemplateConfig,
+ *         nowo_word_to_pdf?: NowoWordToPdfConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -804,7 +816,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         services?: ServicesConfig,
  *         framework?: FrameworkConfig,
  *         twig?: TwigConfig,
- *         nowo_word_template?: NowoWordTemplateConfig,
+ *         nowo_word_to_pdf?: NowoWordToPdfConfig,
  *         nowo_twig_inspector?: NowoTwigInspectorConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias

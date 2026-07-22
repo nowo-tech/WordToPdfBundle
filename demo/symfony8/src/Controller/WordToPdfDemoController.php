@@ -40,16 +40,16 @@ final class WordToPdfDemoController extends AbstractController
                 'mapped'      => false,
                 'required'    => true,
                 'constraints' => [
-                    new File([
-                        'maxSize'   => '20M',
-                        'mimeTypes' => [
+                    new File(
+                        maxSize: '20M',
+                        mimeTypes: [
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                             'application/msword',
                             'application/zip',
                             'application/octet-stream',
                         ],
-                        'mimeTypesMessage' => 'Please upload a .docx or .doc file.',
-                    ]),
+                        mimeTypesMessage: 'Please upload a .docx or .doc file.',
+                    ),
                 ],
             ])
             ->add('convert', SubmitType::class, ['label' => 'Convert to PDF'])

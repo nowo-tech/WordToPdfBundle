@@ -16,11 +16,10 @@ final class PdfExporterTest extends TestCase
         $src = tempnam(sys_get_temp_dir(), 'wtp_pdf_');
         self::assertNotFalse($src);
         file_put_contents($src, '%PDF-1.4');
-        $pdf = new ConvertedPdf($src, true, 'doc.pdf');
 
         $exporter = new PdfExporter();
         $dest     = sys_get_temp_dir() . '/wtp_copy_' . uniqid('', true) . '.pdf';
-        // toFile disposes temporary source
+        // toFile disposes temporary source; use non-temporary so we can assert contents after
         $pdfKeep = new ConvertedPdf($src, false, 'doc.pdf');
         $exporter->toFile($pdfKeep, $dest);
         self::assertFileExists($dest);
