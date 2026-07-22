@@ -10,11 +10,27 @@ There is no separate executable spec language (for example Gherkin); tests and s
 
 ## Table of contents
 
+- [GitHub Spec Kit](#github-spec-kit)
 - [User stories](#user-stories)
 - [Bundle functional scope](#bundle-functional-scope)
 - [Configuration](#configuration)
 - [Demos and REQ anchors](#demos-and-req-anchors)
 - [Verification](#verification)
+
+## GitHub Spec Kit
+
+This repository uses **GitHub Spec Kit** with **Cursor Agent**:
+
+| Path | Role |
+|------|------|
+| `.specify/` | Spec Kit memory + templates |
+| `.cursor/skills/speckit-*` | Slash skills (`/speckit-specify`, `/speckit-plan`, `/speckit-tasks`, `/speckit-implement`, …) |
+| `specs/001-baseline/` | Normative product baseline + code inventory |
+| [`docs/SPEC-KIT.md`](SPEC-KIT.md) | Operator manual (install Specify CLI, initialize, workflows) |
+
+**Maintainer checklist:** keep `spec.md` / `code-inventory.md` in sync when adding `src/` files; prefer `/speckit-*` for new features (`002+`); never contradict baseline FR-*.
+
+Full install and usage instructions: [`SPEC-KIT.md`](SPEC-KIT.md).
 
 ## User stories
 
@@ -45,7 +61,10 @@ Canonical keys: `nowo_word_to_pdf.default_profile` + `nowo_word_to_pdf.profiles`
 |--------|--------|
 | REQ-DEMO-005 | `demo/symfony8/Makefile` `Demo started at:` |
 | REQ-DEMO-007 | `update-bundle` / path mount `/var/word-to-pdf-bundle` |
+| REQ-DEMO-010 | `FRANKENPHP_MODE` + FrankenPHP PHP 8.5 image |
+| REQ-RUNTIME-001 | Process timeouts + Caddy/PHP hierarchy |
 | REQ-MAKE-002 | Root `release-check` → `test-coverage` + `release-check-demos` |
+| REQ-SPECKIT-001 | `.cursor/skills/speckit-*` + `specs/001-baseline/` |
 
 ## Verification
 

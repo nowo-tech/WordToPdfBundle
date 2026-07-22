@@ -22,6 +22,13 @@ final class RuntimeBootCheckListener implements EventSubscriberInterface
 
     private readonly LoggerInterface $logger;
 
+    /**
+     * @param bool $enabled Whether boot check is enabled
+     * @param string $bootFailure Failure mode (exception|warning)
+     * @param RuntimeRequirementsChecker $requirementsChecker Runtime checker
+     * @param ProfileResolver $profileResolver Profile resolver
+     * @param LoggerInterface|null $logger Optional logger
+     */
     public function __construct(
         private readonly bool $enabled,
         private readonly string $bootFailure,
@@ -32,6 +39,11 @@ final class RuntimeBootCheckListener implements EventSubscriberInterface
         $this->logger = $logger ?? new NullLogger();
     }
 
+    /**
+     * Return kernel events this subscriber listens to.
+     *
+     * @return array<string, array{0: string, 1: int}>
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -39,6 +51,13 @@ final class RuntimeBootCheckListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * Optionally assert LibreOffice readiness on the first request.
+     *
+     * @param RequestEvent $event Kernel request event
+     *
+     * @return void
+     */
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$this->enabled || $this->checked || !$event->isMainRequest()) {

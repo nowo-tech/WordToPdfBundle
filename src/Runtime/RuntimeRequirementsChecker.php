@@ -21,13 +21,22 @@ use function version_compare;
  */
 class RuntimeRequirementsChecker
 {
+    /**
+     * @param LibreOfficeBinaryLocator $locator Binary locator
+     */
     public function __construct(
         private readonly LibreOfficeBinaryLocator $locator,
     ) {
     }
 
     /**
+     * Assert Writer is ready and return the resolved binary path.
+     *
+     * @param ResolvedConfig $config Resolved conversion profile
+     *
      * @throws MissingDependencyException
+     *
+     * @return string Absolute path to the LibreOffice binary
      */
     public function assertReady(ResolvedConfig $config): string
     {
@@ -54,6 +63,13 @@ class RuntimeRequirementsChecker
         return $binary;
     }
 
+    /**
+     * Whether LibreOffice Writer is ready for the given config.
+     *
+     * @param ResolvedConfig $config Resolved conversion profile
+     *
+     * @return bool
+     */
     public function isReady(ResolvedConfig $config): bool
     {
         try {
@@ -67,6 +83,8 @@ class RuntimeRequirementsChecker
 
     /**
      * Human-readable status for CLI / demo UI.
+     *
+     * @param ResolvedConfig $config Resolved conversion profile
      *
      * @return array{ok: bool, binary: ?string, version: ?string, message: string}
      */
@@ -100,6 +118,7 @@ class RuntimeRequirementsChecker
     {
         $process = new Process([$binary, '--version']);
         $process->setTimeout(15);
+        $process->setIdleTimeout(15);
 
         try {
             $process->mustRun();

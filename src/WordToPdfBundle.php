@@ -13,6 +13,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 final class WordToPdfBundle extends Bundle
 {
+    /**
+     * Returns the DI extension (alias nowo_word_to_pdf).
+     *
+     * @return ExtensionInterface
+     */
     public function getContainerExtension(): ExtensionInterface
     {
         if (!$this->extension instanceof WordToPdfExtension) {

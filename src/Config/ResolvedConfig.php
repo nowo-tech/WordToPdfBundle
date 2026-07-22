@@ -16,7 +16,15 @@ use function is_string;
 final readonly class ResolvedConfig
 {
     /**
-     * @param ExportConfig $export
+     * @param string|null $binaryPath Path to soffice/libreoffice, or null to auto-detect
+     * @param string|null $tempDir Writable temp directory, or null for sys_get_temp_dir()
+     * @param int $timeout Conversion timeout in seconds
+     * @param int $maxSourceBytes Maximum allowed source file size
+     * @param bool $checkOnBoot Whether to check Writer on kernel request
+     * @param string $bootFailure Boot failure mode (exception|warning)
+     * @param string|null $minVersion Minimum LibreOffice version, or null
+     * @param string $filter LibreOffice export filter name
+     * @param ExportConfig $export Export options
      */
     public function __construct(
         public ?string $binaryPath,
@@ -32,7 +40,11 @@ final readonly class ResolvedConfig
     }
 
     /**
-     * @param array<string, mixed> $data
+     * Build a ResolvedConfig from a profile-shaped array.
+     *
+     * @param array<string, mixed> $data Profile-shaped configuration
+     *
+     * @return self
      */
     public static function fromArray(array $data): self
     {
@@ -58,6 +70,8 @@ final readonly class ResolvedConfig
     }
 
     /**
+     * Export the resolved config as an array.
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array

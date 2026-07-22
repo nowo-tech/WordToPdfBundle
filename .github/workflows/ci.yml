@@ -6,6 +6,9 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  schedule:
+    # Weekly smoke (REQ-GH-008)
+    - cron: '17 4 * * 1'
 
 jobs:
   git-hygiene:
@@ -103,3 +106,10 @@ jobs:
 
       - name: PHPUnit coverage gate (min 100% lines)
         run: composer coverage-check
+
+      - name: Upload coverage to Codecov
+        if: github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false

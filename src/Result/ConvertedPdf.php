@@ -13,6 +13,11 @@ use function sprintf;
  */
 final readonly class ConvertedPdf
 {
+    /**
+     * @param string $path Absolute filesystem path to the PDF
+     * @param bool $isTemporary Whether the file should be deleted on dispose
+     * @param string $suggestedFilename Suggested download filename
+     */
     public function __construct(
         private string $path,
         private bool $isTemporary,
@@ -20,21 +25,41 @@ final readonly class ConvertedPdf
     ) {
     }
 
+    /**
+     * Absolute filesystem path to the PDF.
+     *
+     * @return string
+     */
     public function path(): string
     {
         return $this->path;
     }
 
+    /**
+     * Whether the PDF file should be deleted on dispose/send.
+     *
+     * @return bool
+     */
     public function isTemporary(): bool
     {
         return $this->isTemporary;
     }
 
+    /**
+     * Suggested download filename.
+     *
+     * @return string
+     */
     public function suggestedFilename(): string
     {
         return $this->suggestedFilename;
     }
 
+    /**
+     * Read PDF bytes from disk.
+     *
+     * @return string
+     */
     public function readContents(): string
     {
         $c = @file_get_contents($this->path);
@@ -47,6 +72,8 @@ final readonly class ConvertedPdf
 
     /**
      * Removes the temporary output file when {@see self::isTemporary()} is true.
+     *
+     * @return void
      */
     public function dispose(): void
     {

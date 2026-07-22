@@ -42,3 +42,6 @@ coverage.xml
 *.tgz
 *.rar
 *.7z
+
+# Transient assets used while regenerating stress-styles.docx
+/public/demo/_stress_assets/

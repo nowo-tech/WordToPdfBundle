@@ -15,7 +15,8 @@ use function sprintf;
 final readonly class ProfileResolver
 {
     /**
-     * @param array<string, array<string, mixed>> $profiles
+     * @param array<string, array<string, mixed>> $profiles Named profile configurations
+     * @param string $defaultProfile Default profile key
      */
     public function __construct(
         private array $profiles,
@@ -24,7 +25,14 @@ final readonly class ProfileResolver
     }
 
     /**
-     * @param array<string, mixed> $adhoc
+     * Resolve a named profile merged with optional ad-hoc overrides.
+     *
+     * @param string $profile Profile key from configuration
+     * @param array<string, mixed> $adhoc Per-call overrides (deepest wins)
+     *
+     * @throws InvalidProfileException if the profile does not exist
+     *
+     * @return ResolvedConfig
      */
     public function resolve(string $profile, array $adhoc = []): ResolvedConfig
     {
@@ -40,7 +48,11 @@ final readonly class ProfileResolver
     }
 
     /**
-     * @param array<string, mixed> $adhoc
+     * Resolve the default profile merged with optional ad-hoc overrides.
+     *
+     * @param array<string, mixed> $adhoc Per-call overrides (deepest wins)
+     *
+     * @return ResolvedConfig
      */
     public function resolveDefault(array $adhoc = []): ResolvedConfig
     {
@@ -48,13 +60,22 @@ final readonly class ProfileResolver
     }
 
     /**
-     * @param array<string, mixed> $profileConfig
+     * Build a profile from a full config array without YAML merge.
+     *
+     * @param array<string, mixed> $profileConfig Profile-shaped configuration
+     *
+     * @return ResolvedConfig
      */
     public function resolveInline(array $profileConfig): ResolvedConfig
     {
         return ResolvedConfig::fromArray($profileConfig);
     }
 
+    /**
+     * Default profile key from configuration.
+     *
+     * @return string
+     */
     public function getDefaultProfileKey(): string
     {
         return $this->defaultProfile;

@@ -3,26 +3,121 @@
 {% block title %}WordToPdfBundle demo{% endblock %}
 
 {% block body %}
-<section style="max-width:42rem;margin:2rem auto;font-family:system-ui,sans-serif;">
-  <h1>WordToPdfBundle</h1>
-  <p>Convert <code>.docx</code> / <code>.doc</code> to PDF via LibreOffice Writer. Works with PHP-FPM and FrankenPHP.</p>
+<section>
+  <h1 class="h3 mb-2">WordToPdfBundle</h1>
+  <p class="text-secondary mb-4">
+    Convert <code>.docx</code> / <code>.doc</code> to PDF via LibreOffice Writer.
+    Works with PHP-FPM and FrankenPHP.
+  </p>
 
-  <h2>Runtime check</h2>
+  <h2 class="h5">Runtime check</h2>
   {% if runtime.ok %}
-    <p style="color:green;"><strong>OK</strong> — {{ runtime.message }}</p>
+    <p class="text-success"><strong>OK</strong> — {{ runtime.message }}</p>
   {% else %}
-    <pre style="color:#b00020;white-space:pre-wrap;">{{ runtime.message }}</pre>
+    <pre class="text-danger" style="white-space:pre-wrap;">{{ runtime.message }}</pre>
   {% endif %}
 
-  <h2>Convert upload</h2>
+  <h2 class="h5 mt-4">Stress sample — what this Word throws at the converter</h2>
+  <p class="small text-secondary mb-3">
+    <code>stress-styles.docx</code> (<em>DOCX Converter Stress Test</em> v1.0) is a synthetic QA gauntlet for
+    <code>soffice</code> → PDF: images, styles, tables, sections, fields, Unicode and layout edge cases.
+    Use it to judge fidelity (not “pretty marketing” output).
+    The demo image ships <strong>Liberation / DejaVu / Noto</strong> fonts so glyphs are not tofu boxes.
+  </p>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <div class="border rounded p-3 h-100 bg-light">
+        <h3 class="h6 text-uppercase text-secondary mb-2">Images</h3>
+        <ul class="small mb-0 ps-3">
+          <li>5 embedded assets (JPEG photo + PNGs: icon, chart, transparent gradient)</li>
+          <li>Scaling / proportion and transparency checks</li>
+          <li>Figure captions and legends (§8)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="border rounded p-3 h-100 bg-light">
+        <h3 class="h6 text-uppercase text-secondary mb-2">Tables</h3>
+        <ul class="small mb-0 ps-3">
+          <li>6 tables: quarterly grid, horizontal merge, nested table</li>
+          <li>Wide 10-column ledger on a landscape section</li>
+          <li>Tab-aligned money table (name / dept / amount)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="border rounded p-3 h-100 bg-light">
+        <h3 class="h6 text-uppercase text-secondary mb-2">Styles &amp; typography</h3>
+        <ul class="small mb-0 ps-3">
+          <li>Heading hierarchy + ~169 Word styles in the package</li>
+          <li>Bold, italic, underline, strike, highlight, super/subscript</li>
+          <li>Expanded spacing, small caps, shading, borders</li>
+          <li>Numbered lists + nested bullets; L/C/R/justify alignments</li>
+          <li>Monospace “code” block with sensitive chars (<code>&lt;&gt;&amp;"'</code>, Windows paths)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="border rounded p-3 h-100 bg-light">
+        <h3 class="h6 text-uppercase text-secondary mb-2">Sections &amp; columns</h3>
+        <ul class="small mb-0 ps-3">
+          <li>4 section properties: portrait ↔ landscape</li>
+          <li><strong>Two-column</strong> flow + explicit column break</li>
+          <li>Long-word wrapping / justification stress text</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="border rounded p-3 h-100 bg-light">
+        <h3 class="h6 text-uppercase text-secondary mb-2">Headers, footers &amp; fields</h3>
+        <ul class="small mb-0 ps-3">
+          <li>Running header: <code>CONVERTER STRESS TEST · DOCX → PDF</code></li>
+          <li>Footer fields <code>PAGE</code> / <code>NUMPAGES</code></li>
+          <li>Dynamic <code>TOC</code> field + cover <code>DATE</code> field</li>
+          <li>Core metadata (title, subject, keywords)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="border rounded p-3 h-100 bg-light">
+        <h3 class="h6 text-uppercase text-secondary mb-2">Unicode, links &amp; edge cases</h3>
+        <ul class="small mb-0 ps-3">
+          <li>Latin + Greek / Cyrillic / Arabic / Hebrew / CJK + emoji</li>
+          <li>Math / currency symbols and linear “equations”</li>
+          <li>External hyperlink; very long URL and unbroken long words</li>
+          <li>Combining marks, ligatures, mixed dashes</li>
+          <li>Closing validation checklist (images, tables, orientation, columns, fields…)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <p class="small text-muted mb-3">
+    FrankenPHP timeout stack (demo): LibreOffice Process <strong>180s</strong>
+    → PHP <code>max_execution_time</code> <strong>240s</strong>
+    → Caddy write <strong>250s</strong>; queue wait max <strong>30s</strong>.
+    On Process timeout the bundle kills the conversion and orphaned <code>soffice</code> children.
+  </p>
+
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a class="btn btn-danger" href="{{ path('demo_stress') }}">Convert stress-styles.docx → PDF</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ path('demo_download_source', {name: 'stress-styles.docx'}) }}">Download .docx source</a>
+  </div>
+
+  <h2 class="h5">Convert upload</h2>
   {% if error %}
-    <pre style="color:#b00020;white-space:pre-wrap;">{{ error }}</pre>
+    <pre class="text-danger" style="white-space:pre-wrap;">{{ error }}</pre>
   {% endif %}
   {{ form_start(form) }}
     {{ form_row(form.document) }}
     {{ form_row(form.convert) }}
   {{ form_end(form) }}
 
-  <p><a href="{{ path('demo_sample') }}">Download sample.docx as PDF</a></p>
+  <p class="mt-3 mb-0">
+    <a href="{{ path('demo_sample') }}">Minimal sample.docx → PDF</a>
+    ·
+    <a href="{{ path('demo_download_source', {name: 'sample.docx'}) }}">download source</a>
+  </p>
 </section>
 {% endblock %}

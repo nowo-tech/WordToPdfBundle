@@ -21,6 +21,10 @@ use Symfony\Component\Validator\Constraints\File;
 
 final class WordToPdfDemoController extends AbstractController
 {
+    private const SAMPLE_SIMPLE = 'sample.docx';
+
+    private const SAMPLE_STRESS = 'stress-styles.docx';
+
     public function __construct(
         private readonly WordToPdfConverterInterface $converter,
         private readonly ExporterInterface $exporter,
@@ -84,13 +88,42 @@ final class WordToPdfDemoController extends AbstractController
     #[Route('/sample.pdf', name: 'demo_sample', methods: ['GET'])]
     public function sample(): Response
     {
-        $sample = $this->getParameter('kernel.project_dir') . '/public/demo/sample.docx';
+        return $this->convertBundledSample(self::SAMPLE_SIMPLE);
+    }
+
+    #[Route('/stress.pdf', name: 'demo_stress', methods: ['GET'])]
+    public function stress(): Response
+    {
+        return $this->convertBundledSample(self::SAMPLE_STRESS);
+    }
+
+    #[Route('/demo/{name}', name: 'demo_download_source', methods: ['GET'], requirements: ['name' => 'sample\.docx|stress-styles\.docx'])]
+    public function downloadSource(string $name): Response
+    {
+        $path = $this->demoFilePath($name);
+        if (!is_file($path)) {
+            return new Response('Sample not found.', 404, ['Content-Type' => 'text/plain; charset=UTF-8']);
+        }
+
+        return $this->file($path, $name);
+    }
+
+    private function convertBundledSample(string $filename): Response
+    {
+        $sample = $this->demoFilePath($filename);
         try {
             $pdf = $this->converter->convert($sample);
 
             return $this->exporter->toBinaryResponse($pdf);
         } catch (MissingDependencyException $e) {
             return new Response($e->getMessage(), 503, ['Content-Type' => 'text/plain; charset=UTF-8']);
+        } catch (WordToPdfExceptionInterface $e) {
+            return new Response($e->getMessage(), 500, ['Content-Type' => 'text/plain; charset=UTF-8']);
         }
+    }
+
+    private function demoFilePath(string $filename): string
+    {
+        return $this->getParameter('kernel.project_dir') . '/public/demo/' . $filename;
     }
 }

@@ -31,6 +31,11 @@ final class Configuration implements ConfigurationInterface
         'warning',
     ];
 
+    /**
+     * Build the nowo_word_to_pdf configuration tree.
+     *
+     * @return TreeBuilder
+     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder(self::ALIAS);

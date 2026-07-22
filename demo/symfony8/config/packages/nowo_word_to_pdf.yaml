@@ -3,6 +3,8 @@ nowo_word_to_pdf:
     default_profile: default
     profiles:
         default:
+            # Hard soffice wall-clock (Symfony Process). Keep below PHP max_execution_time (240)
+            # and Caddy write timeout (250s) configured in docker/frankenphp/Caddyfile*.
             timeout: 180
             check_on_boot: true
             boot_failure: warning

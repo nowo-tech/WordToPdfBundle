@@ -12,16 +12,21 @@ use RecursiveIteratorIterator;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 use function basename;
 use function copy;
+use function escapeshellarg;
 use function file_exists;
+use function function_exists;
 use function is_dir;
 use function is_file;
 use function mkdir;
 use function pathinfo;
+use function preg_match;
 use function preg_replace;
 use function sprintf;
+use function str_contains;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
@@ -33,13 +38,24 @@ use const PATHINFO_FILENAME;
  * Runs LibreOffice headless conversion: Word → PDF.
  *
  * Compatible with PHP-FPM and FrankenPHP (Symfony Process / proc_open).
+ * Always applies {@see ResolvedConfig::$timeout} and force-stops the process tree on
+ * timeout/failure so FrankenPHP workers are not left with orphaned `soffice` children.
  */
 class LibreOfficeProcessRunner
 {
     /**
+     * Run LibreOffice headless conversion and return the absolute PDF path.
+     *
+     * Applies profile timeout as wall-clock and idle timeout; on expiry or failure
+     * force-stops the process and reaps orphaned LibreOffice children (REQ-RUNTIME-001).
+     *
+     * @param string $sourcePath Absolute path to the Word document
+     * @param string $binary Absolute path to soffice/libreoffice
+     * @param ResolvedConfig $config Resolved conversion profile
+     *
      * @throws ConversionFailedException
      *
-     * @return non-empty-string absolute path to the generated PDF
+     * @return non-empty-string Absolute path to the generated PDF
      */
     public function convert(string $sourcePath, string $binary, ResolvedConfig $config): string
     {
@@ -91,20 +107,27 @@ class LibreOfficeProcessRunner
             $outDir,
             $inputPath,
         ]);
-        $process->setTimeout($config->timeout);
+
+        // Hard wall-clock + idle caps: under FrankenPHP a blocked worker must not keep soffice forever.
+        $timeoutSeconds = (float) $config->timeout;
+        $process->setTimeout($timeoutSeconds);
+        $process->setIdleTimeout($timeoutSeconds);
 
         try {
             $process->mustRun();
         } catch (ProcessTimedOutException $e) {
+            $this->forceStopProcess($process, $userProfile);
             $this->cleanupDir($workDir);
             throw new ConversionFailedException(sprintf('LibreOffice conversion timed out after %d seconds.', $config->timeout), 0, $e);
         } catch (ProcessFailedException $e) {
+            $this->forceStopProcess($process, $userProfile);
             $this->cleanupDir($workDir);
             throw new ConversionFailedException(sprintf('LibreOffice conversion failed: %s', trim($process->getErrorOutput() !== '' ? $process->getErrorOutput() : $process->getOutput())), 0, $e);
         }
 
         $expectedPdf = $outDir . DIRECTORY_SEPARATOR . pathinfo($inputName, PATHINFO_FILENAME) . '.pdf';
         if (!is_file($expectedPdf)) {
+            $this->forceStopProcess($process, $userProfile);
             $this->cleanupDir($workDir);
             throw new ConversionFailedException(sprintf('LibreOffice did not produce the expected PDF at "%s". Output: %s', $expectedPdf, trim($process->getOutput() . "\n" . $process->getErrorOutput())));
         }
@@ -120,6 +143,56 @@ class LibreOfficeProcessRunner
         $this->cleanupDir($workDir);
 
         return $finalPath;
+    }
+
+    /**
+     * Ensure the Symfony Process is dead and try to reap LibreOffice child processes
+     * bound to this conversion's UserInstallation profile (common orphan under FrankenPHP).
+     */
+    private function forceStopProcess(Process $process, string $userProfile): void
+    {
+        try {
+            if ($process->isRunning()) {
+                // 0 = do not wait for graceful SIGTERM; escalate quickly to SIGKILL.
+                $process->stop(0);
+            }
+            // @codeCoverageIgnoreStart
+        } catch (Throwable) {
+            // Best-effort cleanup only.
+        }
+        // @codeCoverageIgnoreEnd
+
+        $this->killOrphanedLibreOfficeForProfile($userProfile);
+    }
+
+    /**
+     * LibreOffice often spawns `soffice.bin` children that outlive the wrapper when a worker is aborted.
+     * Only matches our generated workspaces (`word_to_pdf_*`).
+     */
+    private function killOrphanedLibreOfficeForProfile(string $userProfile): void
+    {
+        if ($userProfile === '' || !str_contains($userProfile, 'word_to_pdf_')) {
+            // @codeCoverageIgnoreStart
+            return;
+            // @codeCoverageIgnoreEnd
+        }
+
+        // Reject unexpected characters before interpolating into a shell pattern.
+        if (preg_match('#^[A-Za-z0-9_./:-]+$#', $userProfile) !== 1) {
+            // @codeCoverageIgnoreStart
+            return;
+            // @codeCoverageIgnoreEnd
+        }
+
+        if (!function_exists('exec')) {
+            // @codeCoverageIgnoreStart
+            return;
+            // @codeCoverageIgnoreEnd
+        }
+
+        $pattern = 'UserInstallation=file://' . $userProfile;
+        // pkill may be absent on minimal images; ignore failures.
+        @exec('pkill -9 -f ' . escapeshellarg($pattern) . ' 2>/dev/null');
     }
 
     private function safeBasename(string $path): string

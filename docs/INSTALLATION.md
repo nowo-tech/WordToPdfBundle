@@ -39,3 +39,5 @@ Exit code `0` means LibreOffice Writer is ready. Exit code `1` prints install in
 - `proc_open` must not be listed in `disable_functions` (Symfony Process).
 - The PHP user must be able to execute `soffice` and write to the configured temp directory.
 - Prefer installing fonts used by your documents inside the container/image for best fidelity.
+  Without matching fonts, LibreOffice often exports **tofu boxes (□□□)** instead of glyphs.
+  The FrankenPHP demo image installs Liberation, DejaVu, and Noto (incl. CJK/emoji) for this reason.

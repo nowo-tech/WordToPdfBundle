@@ -4,6 +4,27 @@
 
 *(none yet)*
 
+## To 1.1.0
+
+No breaking public API changes. Safe to upgrade with:
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+### Behavioral notes (non-breaking)
+
+- Profile **`timeout`** is now applied as Symfony Process **wall-clock and idle timeout**. On timeout or process failure the runner calls `Process::stop(0)` and attempts to reap LibreOffice children matching the conversion `UserInstallation` workspace (`pkill`). Ensure `pkill` / `procps` exists in conversion images if you rely on orphan cleanup (the demo Dockerfile already installs `procps`).
+- Keep PHP `max_execution_time` and reverse-proxy write deadlines **above** your profile `timeout` (see [DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md#timeouts-avoid-stuck-frankenphp-workers--orphaned-soffice) and [CONFIGURATION.md](CONFIGURATION.md)).
+
+### Demo-only
+
+- Default `FRANKENPHP_MODE` is **`worker`** (was often `classic` locally). Set `classic` in `demo/symfony8/.env` and recreate containers if you need per-request PHP. Image is FrankenPHP **PHP 8.5** Alpine.
+
+### Breaking changes
+
+None.
+
 ## To 1.0.0 (initial release)
 
 This is the first stable release. Install or require the package:

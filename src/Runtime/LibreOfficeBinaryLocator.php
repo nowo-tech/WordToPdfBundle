@@ -32,12 +32,19 @@ class LibreOfficeBinaryLocator
     /**
      * @param list<string>|null $candidatePaths
      */
+    /**
+     * @param list<string>|null $candidatePaths Optional override of default candidate paths
+     */
     public function __construct(?array $candidatePaths = null)
     {
         $this->candidatePaths = $candidatePaths ?? self::CANDIDATE_PATHS;
     }
 
     /**
+     * Locate a usable LibreOffice binary path.
+     *
+     * @param string|null $configuredPath Explicit binary path from config, if any
+     *
      * @return non-empty-string|null
      */
     public function locate(?string $configuredPath = null): ?string
@@ -55,6 +62,13 @@ class LibreOfficeBinaryLocator
         return $this->findOnPath('soffice') ?? $this->findOnPath('libreoffice');
     }
 
+    /**
+     * Whether the path points to an executable LibreOffice binary.
+     *
+     * @param string $path Candidate binary path
+     *
+     * @return bool
+     */
     public function isUsableBinary(string $path): bool
     {
         return is_file($path) && is_executable($path);

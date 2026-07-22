@@ -62,10 +62,8 @@ return (new Config())
             'null_adjustment' => 'always_last',
             'sort_algorithm' => 'alpha',
         ],
-        'no_superfluous_phpdoc_tags' => [
-            'allow_mixed' => true,
-            'remove_inheritdoc' => false,
-        ],
+        // Disabled: REQ-CS-001 requires @param/@return on public methods even when types match the signature.
+        'no_superfluous_phpdoc_tags' => false,
         'phpdoc_align' => [
             'align' => 'left',
             'tags' => ['param', 'property', 'return', 'throws', 'type', 'var'],

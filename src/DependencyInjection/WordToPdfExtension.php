@@ -10,8 +10,19 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+/**
+ * DI extension for alias nowo_word_to_pdf.
+ */
 final class WordToPdfExtension extends Extension
 {
+    /**
+     * Load and process bundle configuration into the container.
+     *
+     * @param list<array<string, mixed>> $configs Raw configs
+     * @param ContainerBuilder $container Service container
+     *
+     * @return void
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -35,6 +46,11 @@ final class WordToPdfExtension extends Extension
         }
     }
 
+    /**
+     * Return the extension alias nowo_word_to_pdf.
+     *
+     * @return string
+     */
     public function getAlias(): string
     {
         return Configuration::ALIAS;

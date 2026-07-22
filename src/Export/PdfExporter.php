@@ -20,11 +20,21 @@ use function sprintf;
 
 final readonly class PdfExporter implements ExporterInterface
 {
+    /**
+     * @param FilesystemOperator|null $flysystem Optional Flysystem operator
+     */
     public function __construct(
         private ?FilesystemOperator $flysystem = null,
     ) {
     }
 
+    /**
+     * Stream the PDF as an HTTP response.
+     *
+     * @param ConvertedPdf $pdf Converted PDF handle
+     *
+     * @return StreamedResponse
+     */
     public function toStreamResponse(ConvertedPdf $pdf): StreamedResponse
     {
         $filename = $pdf->suggestedFilename();
@@ -53,6 +63,13 @@ final readonly class PdfExporter implements ExporterInterface
         );
     }
 
+    /**
+     * Return a BinaryFileResponse for download.
+     *
+     * @param ConvertedPdf $pdf Converted PDF handle
+     *
+     * @return BinaryFileResponse
+     */
     public function toBinaryResponse(ConvertedPdf $pdf): BinaryFileResponse
     {
         $filename = $pdf->suggestedFilename();
@@ -66,6 +83,14 @@ final readonly class PdfExporter implements ExporterInterface
         return $response;
     }
 
+    /**
+     * Copy the PDF to a local filesystem path.
+     *
+     * @param ConvertedPdf $pdf Converted PDF handle
+     * @param string $path Destination path
+     *
+     * @return void
+     */
     public function toFile(ConvertedPdf $pdf, string $path): void
     {
         try {
@@ -84,6 +109,14 @@ final readonly class PdfExporter implements ExporterInterface
         }
     }
 
+    /**
+     * Upload the PDF via the configured Flysystem operator.
+     *
+     * @param ConvertedPdf $pdf Converted PDF handle
+     * @param string $remotePath Remote object path
+     *
+     * @return void
+     */
     public function toFlysystem(ConvertedPdf $pdf, string $remotePath): void
     {
         if (!$this->flysystem instanceof FilesystemOperator) {

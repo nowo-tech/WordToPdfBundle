@@ -93,9 +93,11 @@ public function download(WordToPdfConverterInterface $converter, ExporterInterfa
 
 ## FrankenPHP worker mode
 
-The demo runs under FrankenPHP. Conversion uses Symfony Process and does **not** require FrankenPHP-specific APIs — the same code runs under classic PHP-FPM. See [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md).
+FrankenPHP worker mode: Supported (tested with LibreOffice conversion under FrankenPHP).
 
-Demos run with **FrankenPHP** (Caddy + PHP in Docker). **`docker-compose`** defaults to **`APP_ENV=dev`**, so the entrypoint uses **Caddyfile.dev** (no PHP worker), and Twig/PHP changes are visible on refresh. **Worker mode** applies to a production-style setup — see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md).
+The demo runs under FrankenPHP. Conversion uses Symfony Process with a hard **timeout** (and idle timeout); on expiry the runner stops the process tree so workers are not left with orphaned LibreOffice children (**REQ-RUNTIME-001**). Align PHP / Caddy deadlines above the profile timeout.
+
+Demos use **`FRANKENPHP_MODE`** (`worker` by default, or `classic`) on PHP **8.5** — see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md). Change mode in `.env` and recreate containers (`docker compose up -d`); no image rebuild.
 
 ```bash
 cd demo/symfony8 && cp .env.example .env && make up   # Symfony 8, port 8022

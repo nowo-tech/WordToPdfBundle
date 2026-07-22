@@ -21,6 +21,10 @@ use function is_string;
 )]
 final class CheckRuntimeCommand extends Command
 {
+    /**
+     * @param RuntimeRequirementsChecker $checker Runtime checker
+     * @param ProfileResolver $profileResolver Profile resolver
+     */
     public function __construct(
         private readonly RuntimeRequirementsChecker $checker,
         private readonly ProfileResolver $profileResolver,

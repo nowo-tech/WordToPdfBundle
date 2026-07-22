@@ -32,6 +32,7 @@ nowo_word_to_pdf:
 - `default_profile` **must** exist as a key under `profiles`.
 - Merge order for `convertWithOptions()`: default profile → named profile → ad-hoc options (deepest wins).
 - `convertWithInlineProfile()` uses only the provided array (no YAML merge).
+- **`timeout`** (seconds) is applied as Symfony Process **timeout** and **idle timeout**. On expiry the runner force-stops the process and attempts to kill LibreOffice children bound to that conversion’s `UserInstallation` profile (important under **FrankenPHP** so workers do not keep orphaned `soffice` processes). Keep PHP `max_execution_time` and the HTTP server write timeout **above** this value — see [DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md#timeouts-avoid-stuck-frankenphp-workers--orphaned-soffice).
 
 ## Boot check
 

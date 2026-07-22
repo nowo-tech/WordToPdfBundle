@@ -26,11 +26,19 @@ use function strtolower;
 use const FILEINFO_MIME_TYPE;
 use const PATHINFO_EXTENSION;
 
+/**
+ * Default converter: validates the source, asserts runtime readiness, and runs LibreOffice.
+ */
 final readonly class WordToPdfConverter implements WordToPdfConverterInterface
 {
     /** @var list<string> */
     private const SUPPORTED_EXTENSIONS = ['docx', 'doc'];
 
+    /**
+     * @param ProfileResolver $profileResolver Profile resolver
+     * @param RuntimeRequirementsChecker $requirementsChecker Runtime checker
+     * @param LibreOfficeProcessRunner $processRunner Process runner
+     */
     public function __construct(
         private ProfileResolver $profileResolver,
         private RuntimeRequirementsChecker $requirementsChecker,
@@ -38,16 +46,40 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
     ) {
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $sourcePath Absolute path to a .docx or .doc file
+     *
+     * @return ConvertedPdf
+     */
     public function convert(string $sourcePath): ConvertedPdf
     {
         return $this->convertWithOptions($sourcePath);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $sourcePath Absolute path to a .docx or .doc file
+     * @param string $profile Profile key from configuration
+     *
+     * @return ConvertedPdf
+     */
     public function convertWithProfile(string $sourcePath, string $profile): ConvertedPdf
     {
         return $this->convertWithOptions($sourcePath, [], $profile);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $sourcePath Absolute path to a .docx or .doc file
+     * @param array<string, mixed> $options Same shape as a single YAML profile (subset allowed)
+     * @param string|null $profile Base profile key, or null for the default
+     *
+     * @return ConvertedPdf
+     */
     public function convertWithOptions(string $sourcePath, array $options = [], ?string $profile = null): ConvertedPdf
     {
         $key    = $profile ?? $this->profileResolver->getDefaultProfileKey();
@@ -56,6 +88,14 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
         return $this->doConvert($sourcePath, $config);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $sourcePath Absolute path to a .docx or .doc file
+     * @param array<string, mixed> $profileConfig Profile-shaped configuration
+     *
+     * @return ConvertedPdf
+     */
     public function convertWithInlineProfile(string $sourcePath, array $profileConfig): ConvertedPdf
     {
         $config = $this->profileResolver->resolveInline($profileConfig);
@@ -63,6 +103,13 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
         return $this->doConvert($sourcePath, $config);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param string|null $profile Profile key, or null for the default
+     *
+     * @return void
+     */
     public function assertRuntimeReady(?string $profile = null): void
     {
         $key    = $profile ?? $this->profileResolver->getDefaultProfileKey();
