@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\WordToPdfBundle\Converter;
 
+use finfo;
 use Nowo\WordToPdfBundle\Config\ProfileResolver;
 use Nowo\WordToPdfBundle\Config\ResolvedConfig;
 use Nowo\WordToPdfBundle\Exception\ConversionFailedException;
@@ -15,8 +16,8 @@ use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
 use Throwable;
 
 use function array_replace_recursive;
+use function class_exists;
 use function filesize;
-use function function_exists;
 use function in_array;
 use function is_file;
 use function is_readable;
@@ -200,15 +201,12 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
             throw new ConversionFailedException(sprintf('Source file "%s" exceeds max_source_bytes (%d > %d).', $sourcePath, $size, $config->maxSourceBytes));
         }
 
-        // Light magic check when fileinfo is available
-        if (function_exists('finfo_open')) {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            if ($finfo !== false) {
-                $mime = finfo_file($finfo, $sourcePath) ?: '';
-                finfo_close($finfo);
-                if ($mime !== '' && $mime !== 'inode/x-empty' && (str_starts_with($mime, 'text/') || str_starts_with($mime, 'image/'))) {
-                    throw new UnsupportedFormatException(sprintf('File "%s" does not look like a Word document (mime: %s).', $sourcePath, $mime));
-                }
+        // Light magic check when fileinfo is available (OO API: finfo_close() is deprecated since PHP 8.5)
+        if (class_exists(finfo::class)) {
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mime  = $finfo->file($sourcePath) ?: '';
+            if ($mime !== '' && $mime !== 'inode/x-empty' && (str_starts_with($mime, 'text/') || str_starts_with($mime, 'image/'))) {
+                throw new UnsupportedFormatException(sprintf('File "%s" does not look like a Word document (mime: %s).', $sourcePath, $mime));
             }
         }
     }

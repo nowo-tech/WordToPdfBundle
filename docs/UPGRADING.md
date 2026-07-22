@@ -4,6 +4,22 @@
 
 *(none yet)*
 
+## To 1.2.1
+
+No breaking public API changes. Safe to upgrade with:
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+### Behavioral notes (non-breaking)
+
+- Source mime probing no longer calls `finfo_close()` (deprecated on PHP 8.5); uses `new \finfo(...)` instead. Apps that copy the old procedural pattern should apply the same change.
+
+### Breaking changes
+
+None.
+
 ## To 1.2.0
 
 No breaking public API changes. Safe to upgrade with:

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\WordToPdfBundle\Naming;
 
 use InvalidArgumentException;
+use Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface;
 
 use function basename;
 use function in_array;
@@ -19,7 +20,7 @@ use const PATHINFO_FILENAME;
 /**
  * Builds suggested PDF download filenames from Word source paths.
  *
- * Use with {@see \Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface::convertMany()}.
+ * Use with {@see WordToPdfConverterInterface::convertMany()}.
  * Explicit path => filename maps passed to convertMany override this strategy.
  */
 final readonly class PdfNaming

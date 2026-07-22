@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-07-22
+
+### Fixed
+
+- Avoid PHP 8.5 deprecation on `finfo_close()` by using the object-oriented `\finfo` API in source mime checks (`WordToPdfConverter`).
+
+### Changed
+
+- PHP-CS-Fixer `fully_qualified_strict_types.import_symbols` enabled (import FQCN in `use` statements).
+
+### Compatibility
+
+- Unchanged from 1.2.0.
+
 ## [1.2.0] - 2026-07-22
 
 ### Added

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\WordToPdfBundle\Tests\Unit\Export;
 
+use League\Flysystem\FilesystemOperator;
 use Nowo\WordToPdfBundle\Exception\ExportException;
 use Nowo\WordToPdfBundle\Export\PdfExporter;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
@@ -70,7 +71,7 @@ final class PdfExporterTest extends TestCase
         self::assertNotFalse($src);
         file_put_contents($src, '%PDF');
 
-        $fs = $this->createMock(\League\Flysystem\FilesystemOperator::class);
+        $fs = $this->createMock(FilesystemOperator::class);
         $fs->expects(self::once())->method('writeStream');
 
         $exporter = new PdfExporter($fs);

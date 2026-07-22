@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\WordToPdfBundle\Converter;
 
 use Nowo\WordToPdfBundle\Exception\InvalidProfileException;
+use Nowo\WordToPdfBundle\Exception\MissingDependencyException;
 use Nowo\WordToPdfBundle\Naming\PdfNaming;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 
@@ -85,7 +86,7 @@ interface WordToPdfConverterInterface
      *
      * @param string|null $profile Profile key, or null for the default
      *
-     * @throws \Nowo\WordToPdfBundle\Exception\MissingDependencyException
+     * @throws MissingDependencyException
      * @throws InvalidProfileException
      *
      * @return void
