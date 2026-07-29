@@ -9,6 +9,33 @@
 
 After creating the release commit and tag, run `make check-no-cursor-coauthor` again **before** `git push` (REQ-GIT-001). The release commit itself is not covered by an earlier `release-check` run.
 
+## Table of contents
+
+- [Example for v1.2.2](#example-for-v122)
+- [Example for v1.2.1](#example-for-v121)
+- [Example for v1.2.0](#example-for-v120)
+- [Example for v1.1.1](#example-for-v111)
+- [Example for v1.1.0](#example-for-v110)
+- [Example for v1.0.0](#example-for-v100)
+- [Sync missing releases](#sync-missing-releases)
+
+## Example for v1.2.2
+
+```bash
+git add -A
+git status   # review
+make release-check
+git -c core.hooksPath=.githooks commit -m "$(cat <<'EOF'
+Release 1.2.2: FrankenPHP banner, release-check gates, LibreOffice locator PHPStan.
+
+EOF
+)"
+git tag -a v1.2.2 -m "Release v1.2.2"
+make check-no-cursor-coauthor
+git push origin main
+git push origin v1.2.2
+```
+
 ## Example for v1.2.1
 
 ```bash

@@ -6,6 +6,8 @@
     "keywords": [
         "symfony",
         "symfony-bundle",
+        "php",
+        "frankenphp",
         "word",
         "docx",
         "pdf",
@@ -16,7 +18,7 @@
     "homepage": "https://github.com/nowo-tech/WordToPdfBundle",
     "authors": [
         {
-            "name": "Héctor Franco Aceituno",
+            "name": "H\u00e9ctor Franco Aceituno",
             "email": "hectorfranco@nowo.tech"
         },
         {
@@ -37,6 +39,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
+        "nowo-tech/phpstan-frankenphp": "^1.0",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
@@ -89,5 +92,9 @@
         ],
         "rector": "@php vendor/bin/rector --no-progress-bar",
         "rector-dry": "@php vendor/bin/rector --dry-run --no-progress-bar"
+    },
+    "support": {
+        "issues": "https://github.com/nowo-tech/WordToPdfBundle/issues",
+        "source": "https://github.com/nowo-tech/WordToPdfBundle"
     }
 }

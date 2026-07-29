@@ -8,6 +8,15 @@ services:
       - .:/app
       - coverage-data:/app/var/coverage
     working_dir: /app
+    networks:
+      - word-to-pdf-dev
 
 volumes:
   coverage-data: {}
+
+networks:
+  word-to-pdf-dev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.250.82.0/24

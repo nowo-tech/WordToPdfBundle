@@ -77,6 +77,10 @@ Not applicable; no custom cryptography in this bundle.
 - The same Process-based conversion works under PHP-FPM and FrankenPHP.
 - Always configure profile `timeout` and keep PHP / reverse-proxy deadlines **above** it. On timeout the bundle force-stops the Symfony Process and tries to reap LibreOffice children (`UserInstallation` profile) so FrankenPHP workers are not left with open `soffice` processes.
 
+## REQ-SEC-004
+
+AI audit + remedia **2026-07-29** — grade **Pass (conditional)** / residual risk **Medium** (LibreOffice Process; orphan `soffice` residual mitigated by timeouts + stop/`pkill`; host must validate paths and not pass untrusted uploads without scanning).
+
 ## Reporting
 
 See the repository `.github/SECURITY.md` for coordinated disclosure contacts.

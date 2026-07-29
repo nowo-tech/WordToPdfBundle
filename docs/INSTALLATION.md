@@ -1,5 +1,12 @@
 # Installation
 
+## Table of contents
+
+- [Requirements](#requirements)
+- [Composer](#composer)
+- [Verify runtime](#verify-runtime)
+- [PHP runtime notes (FPM & FrankenPHP)](#php-runtime-notes-fpm-frankenphp)
+
 ## Requirements
 
 - PHP `>=8.2 <8.6`

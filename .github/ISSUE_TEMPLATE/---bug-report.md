@@ -9,7 +9,7 @@ assignees: ''
 
 | Q | A |
 | ----------------------------| ----------------------- |
-| `word-template-bundle` version | x.y.z |
+| `word-to-pdf-bundle` version | x.y.z |
 | PHP version | x.y.z |
 | Symfony version | x.y |
 

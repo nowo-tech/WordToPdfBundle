@@ -30,13 +30,13 @@ class LibreOfficeBinaryLocator
     private readonly array $candidatePaths;
 
     /**
-     * @param list<string>|null $candidatePaths
-     */
-    /**
      * @param list<string>|null $candidatePaths Optional override of default candidate paths
+     * @param string|null $pathEnv Optional PATH override for tests (avoids putenv)
      */
-    public function __construct(?array $candidatePaths = null)
-    {
+    public function __construct(
+        ?array $candidatePaths = null,
+        private readonly ?string $pathEnv = null,
+    ) {
         $this->candidatePaths = $candidatePaths ?? self::CANDIDATE_PATHS;
     }
 
@@ -50,12 +50,16 @@ class LibreOfficeBinaryLocator
     public function locate(?string $configuredPath = null): ?string
     {
         if ($configuredPath !== null && $configuredPath !== '') {
-            return $this->isUsableBinary($configuredPath) ? $configuredPath : null;
+            return $this->usableNonEmptyPath($configuredPath);
         }
 
         foreach ($this->candidatePaths as $candidate) {
-            if ($candidate !== '' && $this->isUsableBinary($candidate)) {
-                return $candidate;
+            if ($candidate === '') {
+                continue;
+            }
+            $found = $this->usableNonEmptyPath($candidate);
+            if ($found !== null) {
+                return $found;
             }
         }
 
@@ -64,10 +68,6 @@ class LibreOfficeBinaryLocator
 
     /**
      * Whether the path points to an executable LibreOffice binary.
-     *
-     * @param string $path Candidate binary path
-     *
-     * @return bool
      */
     public function isUsableBinary(string $path): bool
     {
@@ -77,9 +77,21 @@ class LibreOfficeBinaryLocator
     /**
      * @return non-empty-string|null
      */
+    private function usableNonEmptyPath(string $path): ?string
+    {
+        if ($path === '') {
+            return null;
+        }
+
+        return $this->isUsableBinary($path) ? $path : null;
+    }
+
+    /**
+     * @return non-empty-string|null
+     */
     private function findOnPath(string $name): ?string
     {
-        $pathEnv = getenv('PATH');
+        $pathEnv = $this->pathEnv ?? getenv('PATH');
         if (!is_string($pathEnv) || $pathEnv === '') {
             return null;
         }
@@ -89,8 +101,9 @@ class LibreOfficeBinaryLocator
                 continue;
             }
             $candidate = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $name;
-            if ($this->isUsableBinary($candidate)) {
-                return $candidate;
+            $found = $this->usableNonEmptyPath($candidate);
+            if ($found !== null) {
+                return $found;
             }
         }
 

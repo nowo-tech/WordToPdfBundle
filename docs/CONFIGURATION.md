@@ -2,6 +2,12 @@
 
 Root key: `nowo_word_to_pdf`.
 
+## Table of contents
+
+- [Profiles (REQ-CFG)](#profiles-req-cfg)
+- [Boot check](#boot-check)
+- [Sample file](#sample-file)
+
 ## Profiles (REQ-CFG)
 
 ```yaml

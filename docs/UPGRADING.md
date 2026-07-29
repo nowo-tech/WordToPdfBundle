@@ -1,8 +1,36 @@
 # Upgrading
 
+## Table of contents
+
+- [Unreleased](#unreleased)
+- [To 1.2.2](#to-122)
+- [To 1.2.1](#to-121)
+- [To 1.2.0](#to-120)
+- [To 1.1.1](#to-111)
+- [To 1.1.0](#to-110)
+- [To 1.0.0 (initial release)](#to-100-initial-release)
+- [Version 1.x](#version-1x)
+
 ## Unreleased
 
-*(none yet)*
+_Placeholder for the next release._
+
+## To 1.2.2
+
+No breaking public API changes. Safe to upgrade with:
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+### Behavioral notes (non-breaking)
+
+- **CI / tests:** `SYMFONY_DEPRECATIONS_HELPER=max[direct]=0` (REQ-SF-005).
+- **Runtime:** `LibreOfficeBinaryLocator` accepts optional `$pathEnv` for tests (no `putenv`); return types hardened for PHPStan `non-empty-string`.
+
+### Breaking changes
+
+None.
 
 ## To 1.2.1
 

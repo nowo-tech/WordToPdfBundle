@@ -1,8 +1,15 @@
 # WordToPdfBundle — Docker-driven development (REQ-MAKE-001 / REQ-MAKE-002)
-.PHONY: help up down build shell ensure-up install test test-coverage coverage-check cs-check cs-fix qa clean composer-sync release-check release-check-demos phpstan rector rector-dry update validate setup-hooks check-no-cursor-coauthor strip-cursor-coauthor-from-history assets update-deps
+.PHONY: help up down build shell ensure-up install test test-coverage coverage-check cs-check cs-fix qa clean composer-sync release-check release-check-demos demo-smoke phpstan rector rector-dry update validate setup-hooks check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history assets update-deps
 
 COMPOSE_FILE ?= docker-compose.yml
-COMPOSE      ?= docker-compose -f $(COMPOSE_FILE)
+# Prefer Compose V2; absolute docker path avoids shadowing by local docker/ (REQ-MAKE-010).
+DOCKER_BIN := $(shell PATH="/usr/local/bin:/usr/bin:/bin:$$PATH" command -v docker 2>/dev/null)
+ifeq ($(DOCKER_BIN),)
+COMPOSE_BIN ?= docker-compose
+else
+COMPOSE_BIN ?= $(shell $(DOCKER_BIN) compose version >/dev/null 2>&1 && echo "$(DOCKER_BIN) compose" || echo "docker-compose")
+endif
+COMPOSE     ?= $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP  ?= php
 COMPOSER_INSTALL = $(COMPOSE) exec -T $(SERVICE_PHP) sh -c 'composer install --no-interaction || { rm -rf vendor; composer clear-cache; composer install --no-interaction; }'
 DEMO_PRESENT := $(wildcard demo)
@@ -14,7 +21,8 @@ help:
 	@echo "  Dependencies: install, update, update-deps, composer-sync, validate"
 	@echo "  Tests: test, test-coverage, coverage-check"
 	@echo "  Quality: cs-check, cs-fix, rector, rector-dry, phpstan, qa"
-	@echo "  Release: release-check, release-check-demos"
+	@echo "  Release: release-check, release-check-demos, check-open-prs"
+	@echo "  demo-smoke      REQ-TEST-011: boot demo and assert HTTP 200"
 	@echo "  Demos: cd demo && make up   (or make -C demo/symfony8 up)"
 	@echo "  Assets: assets (no frontend assets in this bundle)"
 	@echo "  Git hooks: setup-hooks, check-no-cursor-coauthor"
@@ -85,6 +93,7 @@ assets:
 
 release-check: ensure-up
 	@$(MAKE) check-no-cursor-coauthor
+	@$(MAKE) check-open-prs
 	@$(MAKE) composer-sync
 	@$(MAKE) cs-fix
 	@$(MAKE) cs-check
@@ -97,6 +106,14 @@ endif
 
 release-check-demos:
 	@$(MAKE) -C demo release-check
+
+# REQ-TEST-011
+demo-smoke:
+	@$(MAKE) -C demo demo-smoke
+
+check-open-prs:
+	@chmod +x .scripts/check-open-prs.sh
+	@bash .scripts/check-open-prs.sh
 
 clean:
 	rm -rf vendor .phpunit.cache coverage .php-cs-fixer.cache coverage-php.txt coverage-output.txt
@@ -126,7 +143,8 @@ setup-hooks:
 
 # REQ-MAKE-008: update-deps
 BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-include $(BUNDLE_ROOT)/../.scripts/Makefile.update-deps.mk
+# Optional: monorepo helper absent on standalone GitHub Actions checkout (REQ-MAKE-009).
+-include $(BUNDLE_ROOT)/../.scripts/Makefile.update-deps.mk
 
 strip-cursor-coauthor-from-history:
 	@chmod +x .scripts/strip-cursor-coauthor-from-history.sh

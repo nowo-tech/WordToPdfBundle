@@ -5,9 +5,9 @@ parameters:
         - tests
     bootstrapFiles:
         - vendor/autoload.php
-    reportUnmatchedIgnoredErrors: false
-    ignoreErrors:
-        -
-            identifier: return.type
-            path: src/Runtime/LibreOfficeBinaryLocator.php
-            message: '#non-empty-string#'
+    # REQ-CS-006: never silence findings here — fix the code instead
+    ignoreErrors: []
+
+includes:
+  - vendor/nowo-tech/phpstan-frankenphp/ruleset-classic.neon
+  - vendor/nowo-tech/phpstan-frankenphp/ruleset-worker.neon

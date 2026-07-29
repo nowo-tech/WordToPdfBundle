@@ -31,13 +31,10 @@ final class LibreOfficeBinaryLocatorTest extends TestCase
         file_put_contents($script, "#!/bin/sh\necho ok\n");
         chmod($script, 0755);
 
-        $prev = getenv('PATH');
-        putenv('PATH=' . $dir);
         try {
-            $locator = new LibreOfficeBinaryLocator();
+            $locator = new LibreOfficeBinaryLocator([], $dir);
             self::assertSame($script, $locator->locate());
         } finally {
-            putenv('PATH=' . ($prev === false ? '' : $prev));
             @unlink($script);
             @rmdir($dir);
         }
@@ -60,25 +57,13 @@ final class LibreOfficeBinaryLocatorTest extends TestCase
 
     public function testFindOnPathEmptySegmentAndMiss(): void
     {
-        $prev = getenv('PATH');
-        putenv('PATH=' . PATH_SEPARATOR . '/tmp/no-such-wtp-bin-' . uniqid());
-        try {
-            $locator = new LibreOfficeBinaryLocator([]);
-            self::assertNull($locator->locate());
-        } finally {
-            putenv('PATH=' . ($prev === false ? '' : $prev));
-        }
+        $locator = new LibreOfficeBinaryLocator([], PATH_SEPARATOR . '/tmp/no-such-wtp-bin-' . uniqid());
+        self::assertNull($locator->locate());
     }
 
     public function testEmptyPathEnv(): void
     {
-        $prev = getenv('PATH');
-        putenv('PATH=');
-        try {
-            $locator = new LibreOfficeBinaryLocator([]);
-            self::assertNull($locator->locate());
-        } finally {
-            putenv('PATH=' . ($prev === false ? '' : $prev));
-        }
+        $locator = new LibreOfficeBinaryLocator([], '');
+        self::assertNull($locator->locate());
     }
 }

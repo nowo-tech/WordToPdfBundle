@@ -9,4 +9,4 @@ assignees: ''
 
 ### Question
 
-### Versions (`composer info nowo-tech/word-template-bundle`, PHP, Symfony)
+### Versions (`composer info nowo-tech/word-to-pdf-bundle`, PHP, Symfony)

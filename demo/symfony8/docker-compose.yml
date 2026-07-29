@@ -36,3 +36,6 @@ volumes:
 networks:
   word-to-pdf-demo-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 10.251.90.0/24

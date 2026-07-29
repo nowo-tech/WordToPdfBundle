@@ -5,7 +5,30 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## Table of contents
+
+- [[Unreleased]](#unreleased)
+- [[1.2.2] - 2026-07-29](#122-2026-07-29)
+- [[1.2.1] - 2026-07-22](#121-2026-07-22)
+- [[1.2.0] - 2026-07-22](#120-2026-07-22)
+- [[1.1.1] - 2026-07-22](#111-2026-07-22)
+- [[1.1.0] - 2026-07-22](#110-2026-07-22)
+- [[1.0.0] - 2026-07-22](#100-2026-07-22)
+
 ## [Unreleased]
+
+## [1.2.2] - 2026-07-29
+
+### Added
+
+- FrankenPHP Friendly Worker Mode banner (REQ-DOCS-017); `make check-open-prs` / `demo-smoke`.
+- `SYMFONY_DEPRECATIONS_HELPER=max[direct]=0` in PHPUnit and CI (REQ-SF-005).
+- Packagist keywords `php` / `frankenphp` and `support` links (REQ-PKG-004).
+
+### Changed
+
+- PHPStan: empty `ignoreErrors` + frankenphp rulesets (REQ-CS-005/006); LibreOffice locator hardened for `non-empty-string` returns.
+- Issue templates reference `word-to-pdf-bundle` (REQ-DOCS-014).
 
 ## [1.2.1] - 2026-07-22
 
@@ -98,7 +121,10 @@ First stable release.
 - System: **LibreOffice Writer** (`libreoffice-writer` / `soffice`) on the host or container
 - Demo image: FrankenPHP **PHP 8.4** (Symfony 8.1)
 
-[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.2
+[1.2.1]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.1
+[1.2.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.0
 [1.1.1]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.1.1
 [1.1.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.1.0
 [1.0.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.0.0

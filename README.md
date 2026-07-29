@@ -1,66 +1,21 @@
 # WordToPdfBundle
 
-[![CI](https://github.com/nowo-tech/WordToPdfBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/WordToPdfBundle/actions/workflows/ci.yml)
-[![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/word-to-pdf-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/word-to-pdf-bundle)
-[![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/word-to-pdf-bundle.svg)](https://packagist.org/packages/nowo-tech/word-to-pdf-bundle)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net)
-[![Symfony](https://img.shields.io/badge/Symfony-7.4%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com)
-[![GitHub stars](https://img.shields.io/github/stars/nowo-tech/word-to-pdf-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/WordToPdfBundle)
-[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage)
+[![CI](https://github.com/nowo-tech/WordToPdfBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/WordToPdfBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/word-to-pdf-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/word-to-pdf-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/word-to-pdf-bundle.svg)](https://packagist.org/packages/nowo-tech/word-to-pdf-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-7.4%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/word-to-pdf-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/WordToPdfBundle) [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage)
 
 > **Found this useful?** Install from Packagist (`composer require nowo-tech/word-to-pdf-bundle`) and consider starring [WordToPdfBundle on GitHub](https://github.com/nowo-tech/WordToPdfBundle).
 
+**FrankenPHP demos:** runtime is selected with **`FRANKENPHP_MODE`** (`worker` default, or `classic` for per-request PHP / hot-reload). See [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md).
 Symfony bundle that converts **Microsoft Word** (`.docx` / `.doc`) to **PDF** using **LibreOffice Writer** (`soffice` headless) for print-quality layout fidelity:
-
 - **named YAML profiles** + **default profile** + deep merge with per-call options, or **`convertWithInlineProfile()`**;
 - **batch conversion** via **`convertMany()`** with **`PdfNaming`** (keep / prefix / suffix / surround / fixed / callback, or path ⇒ filename map);
 - **runtime check** that **LibreOffice Writer** is installed (`nowo:word-to-pdf:check`); fails with install hints if missing;
 - works under **PHP-FPM** and **FrankenPHP** (Symfony Process / `proc_open`);
 - Symfony-friendly export: streamed/binary responses, local path, optional **Flysystem**.
-
 This bundle does **not** fill Word templates (see [WordTemplateBundle](https://github.com/nowo-tech/WordTemplateBundle)), convert HTML to Word (see [HtmlToWordBundle](https://github.com/nowo-tech/HtmlToWordBundle)), or use DomPDF (DomPDF cannot preserve Word styles).
 
-## Documentation
+![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
-- [Installation](docs/INSTALLATION.md)
-- [Configuration](docs/CONFIGURATION.md)
-- [Usage](docs/USAGE.md)
-- [Contributing](docs/CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Changelog](docs/CHANGELOG.md)
-- [Upgrading](docs/UPGRADING.md)
-- [Release](docs/RELEASE.md)
-- [Security](docs/SECURITY.md)
-- [Engram](docs/ENGRAM.md)
-- [Spec-driven development](docs/SPEC-DRIVEN-DEVELOPMENT.md)
-- [GitHub Spec Kit](docs/SPEC-KIT.md)
-
-### Additional documentation
-
-- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
-- [FrankenPHP / Docker demo](docs/DEMO-FRANKENPHP.md) — `demo/symfony8` (see [`demo/README.md`](demo/README.md))
-
-## System requirement
-
-**LibreOffice Writer must be installed on the host / container** (Composer cannot install it):
-
-```bash
-# Debian / Ubuntu
-sudo apt-get install -y libreoffice-writer
-
-# Alpine
-apk add libreoffice
-
-# Fedora / RHEL
-sudo dnf install -y libreoffice-writer
-```
-
-Verify:
-
-```bash
-php bin/console nowo:word-to-pdf:check
-```
+This bundle is **FrankenPHP worker mode friendly**.
 
 ## Quick start
 
@@ -102,6 +57,34 @@ public function download(WordToPdfConverterInterface $converter, ExporterInterfa
 }
 ```
 
+## System requirement
+
+**LibreOffice Writer must be installed on the host / container** (Composer cannot install it):
+
+```bash
+# Debian / Ubuntu
+sudo apt-get install -y libreoffice-writer
+
+# Alpine
+apk add libreoffice
+
+# Fedora / RHEL
+sudo dnf install -y libreoffice-writer
+```
+
+Verify:
+
+```bash
+php bin/console nowo:word-to-pdf:check
+```
+
+## Development
+
+```bash
+make up
+make qa
+make release-check
+```
 ## FrankenPHP worker mode
 
 FrankenPHP worker mode: Supported (tested with LibreOffice conversion under FrankenPHP).
@@ -113,6 +96,26 @@ Demos use **`FRANKENPHP_MODE`** (`worker` by default, or `classic`) on PHP **8.5
 ```bash
 cd demo/symfony8 && cp .env.example .env && make up   # Symfony 8, port 8022
 ```
+
+## Documentation
+
+- [Installation](docs/INSTALLATION.md)
+- [Configuration](docs/CONFIGURATION.md)
+- [Usage](docs/USAGE.md)
+- [Contributing](docs/CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Changelog](docs/CHANGELOG.md)
+- [Upgrading](docs/UPGRADING.md)
+- [Release](docs/RELEASE.md)
+- [Security](docs/SECURITY.md)
+- [Engram](docs/ENGRAM.md)
+- [Spec-driven development](docs/SPEC-DRIVEN-DEVELOPMENT.md)
+- [GitHub Spec Kit](docs/SPEC-KIT.md)
+
+### Additional documentation
+
+- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
+- [FrankenPHP / Docker demo](docs/DEMO-FRANKENPHP.md) — `demo/symfony8` (see [`demo/README.md`](demo/README.md))
 
 ## Tests and coverage
 
@@ -127,10 +130,3 @@ composer test
 composer coverage-check
 ```
 
-## Development
-
-```bash
-make up
-make qa
-make release-check
-```
