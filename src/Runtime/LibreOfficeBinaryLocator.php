@@ -101,7 +101,7 @@ class LibreOfficeBinaryLocator
                 continue;
             }
             $candidate = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $name;
-            $found = $this->usableNonEmptyPath($candidate);
+            $found     = $this->usableNonEmptyPath($candidate);
             if ($found !== null) {
                 return $found;
             }

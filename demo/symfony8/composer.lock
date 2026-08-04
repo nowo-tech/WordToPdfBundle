@@ -200,7 +200,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/word-to-pdf-bundle",
-                "reference": "8cda4e9cb35c027806dc2b2b56e355dee70896d6"
+                "reference": "199ad43d73fd81cfc747de0c44b27b2c94da3df1"
             },
             "require": {
                 "ext-fileinfo": "*",
@@ -215,6 +215,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0",
@@ -297,13 +298,19 @@
             "keywords": [
                 "conversion",
                 "docx",
+                "frankenphp",
                 "libreoffice",
                 "pdf",
+                "php",
                 "soffice",
                 "symfony",
                 "symfony-bundle",
                 "word"
             ],
+            "support": {
+                "issues": "https://github.com/nowo-tech/WordToPdfBundle/issues",
+                "source": "https://github.com/nowo-tech/WordToPdfBundle"
+            },
             "transport-options": {
                 "relative": false
             }

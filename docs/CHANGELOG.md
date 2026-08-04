@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.3] - 2026-08-04](#123-2026-08-04)
 - [[1.2.2] - 2026-07-29](#122-2026-07-29)
 - [[1.2.1] - 2026-07-22](#121-2026-07-22)
 - [[1.2.0] - 2026-07-22](#120-2026-07-22)
@@ -16,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [[1.0.0] - 2026-07-22](#100-2026-07-22)
 
 ## [Unreleased]
+
+## [1.2.3] - 2026-08-04
+
+### Fixed
+- **CI:** php-cs-fixer alignment in `LibreOfficeBinaryLocator::findOnPath`.
+
+[1.2.3]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.3
 
 ## [1.2.2] - 2026-07-29
 
