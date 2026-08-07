@@ -11,6 +11,8 @@ After creating the release commit and tag, run `make check-no-cursor-coauthor` a
 
 ## Table of contents
 
+- [Example for v1.2.4](#example-for-v124)
+- [Example for v1.2.3](#example-for-v123)
 - [Example for v1.2.2](#example-for-v122)
 - [Example for v1.2.1](#example-for-v121)
 - [Example for v1.2.0](#example-for-v120)
@@ -18,6 +20,40 @@ After creating the release commit and tag, run `make check-no-cursor-coauthor` a
 - [Example for v1.1.0](#example-for-v110)
 - [Example for v1.0.0](#example-for-v100)
 - [Sync missing releases](#sync-missing-releases)
+
+## Example for v1.2.4
+
+```bash
+git add -A
+git status   # review
+make release-check
+git -c core.hooksPath=.githooks commit -m "$(cat <<'EOF'
+Release v1.2.4: restore 100% coverage for CI.
+
+EOF
+)"
+git tag -a v1.2.4 -m "Release v1.2.4"
+make check-no-cursor-coauthor
+git push origin main
+git push origin v1.2.4
+```
+
+## Example for v1.2.3
+
+```bash
+git add -A
+git status   # review
+make release-check
+git -c core.hooksPath=.githooks commit -m "$(cat <<'EOF'
+Release v1.2.3: php-cs-fixer alignment in LibreOfficeBinaryLocator.
+
+EOF
+)"
+git tag -a v1.2.3 -m "Release v1.2.3"
+make check-no-cursor-coauthor
+git push origin main
+git push origin v1.2.3
+```
 
 ## Example for v1.2.2
 

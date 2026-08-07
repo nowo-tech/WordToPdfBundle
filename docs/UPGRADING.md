@@ -3,6 +3,8 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.2.4](#to-124)
+- [To 1.2.3](#to-123)
 - [To 1.2.2](#to-122)
 - [To 1.2.1](#to-121)
 - [To 1.2.0](#to-120)
@@ -14,6 +16,26 @@
 ## Unreleased
 
 _Placeholder for the next release._
+
+## To 1.2.4
+
+No breaking public API changes. Safe to upgrade with:
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+### Behavioral notes (non-breaking)
+
+- **CI / tests:** additional unit coverage for empty LibreOffice candidate paths and the empty-path guard in `LibreOfficeBinaryLocator` (restores the 100% line coverage gate).
+
+### Breaking changes
+
+None.
+
+## To 1.2.3
+
+No breaking public API changes. Patch release for php-cs-fixer alignment only.
 
 ## To 1.2.2
 

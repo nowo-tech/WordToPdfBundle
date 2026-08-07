@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.4] - 2026-08-07](#124-2026-08-07)
 - [[1.2.3] - 2026-08-04](#123-2026-08-04)
 - [[1.2.2] - 2026-07-29](#122-2026-07-29)
 - [[1.2.1] - 2026-07-22](#121-2026-07-22)
@@ -17,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [[1.0.0] - 2026-07-22](#100-2026-07-22)
 
 ## [Unreleased]
+
+## [1.2.4] - 2026-08-07
+
+### Fixed
+- **CI:** restore **100%** line coverage for `LibreOfficeBinaryLocator` (empty candidate skip + empty-path guard).
+
+[1.2.4]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.4
 
 ## [1.2.3] - 2026-08-04
 
@@ -129,7 +137,9 @@ First stable release.
 - System: **LibreOffice Writer** (`libreoffice-writer` / `soffice`) on the host or container
 - Demo image: FrankenPHP **PHP 8.4** (Symfony 8.1)
 
-[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.4
+[1.2.3]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.3
 [1.2.2]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.2
 [1.2.1]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.1
 [1.2.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.0
