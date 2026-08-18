@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.5] - 2026-08-18](#125-2026-08-18)
 - [[1.2.4] - 2026-08-07](#124-2026-08-07)
 - [[1.2.3] - 2026-08-04](#123-2026-08-04)
 - [[1.2.2] - 2026-07-29](#122-2026-07-29)
@@ -18,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [[1.0.0] - 2026-07-22](#100-2026-07-22)
 
 ## [Unreleased]
+
+## [1.2.5] - 2026-08-18
+
+### Changed
+
+- **Demos:** pin `nowo-tech/hot-reload-bundle` to `^1.4` with FrankenPHP Mercure/`hot_reload` (`dev`/`test` only).
+
+[1.2.5]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.5
 
 ## [1.2.4] - 2026-08-07
 
@@ -137,7 +146,7 @@ First stable release.
 - System: **LibreOffice Writer** (`libreoffice-writer` / `soffice`) on the host or container
 - Demo image: FrankenPHP **PHP 8.4** (Symfony 8.1)
 
-[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.2.5...HEAD
 [1.2.4]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.4
 [1.2.3]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.3
 [1.2.2]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.2

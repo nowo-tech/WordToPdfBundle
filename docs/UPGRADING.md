@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.2.5](#to-125)
 - [To 1.2.4](#to-124)
 - [To 1.2.3](#to-123)
 - [To 1.2.2](#to-122)
@@ -14,6 +15,14 @@
 - [Version 1.x](#version-1x)
 
 ## Unreleased
+
+## To 1.2.5
+
+From **1.2.4** — No application upgrade steps. **Demos only:** Hot Reload Bundle `^1.4` (FrankenPHP Mercure/`hot_reload`, `dev`/`test`).
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
 
 _Placeholder for the next release._
 
