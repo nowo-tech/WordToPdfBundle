@@ -91,7 +91,7 @@ composer-sync: ensure-up
 assets:
 	@echo "No frontend assets in this bundle."
 
-release-check: ensure-up
+release-check: check-no-cursor-coauthor ensure-up
 	@$(MAKE) check-no-cursor-coauthor
 	@$(MAKE) check-open-prs
 	@$(MAKE) composer-sync
