@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.2.6](#to-126)
 - [To 1.2.5](#to-125)
 - [To 1.2.4](#to-124)
 - [To 1.2.3](#to-123)
@@ -15,6 +16,14 @@
 - [Version 1.x](#version-1x)
 
 ## Unreleased
+
+## To 1.2.6
+
+From **1.2.5** — No application upgrade steps.
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
 
 ## To 1.2.5
 
