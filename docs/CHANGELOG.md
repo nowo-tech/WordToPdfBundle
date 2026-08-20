@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.7] - 2026-08-20](#127-2026-08-20)
 - [[1.2.5] - 2026-08-18](#125-2026-08-18)
 - [[1.2.4] - 2026-08-07](#124-2026-08-07)
 - [[1.2.3] - 2026-08-04](#123-2026-08-04)
@@ -19,6 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [[1.0.0] - 2026-07-22](#100-2026-07-22)
 
 ## [Unreleased]
+
+## [1.2.7] - 2026-08-20
+
+### Security
+
+- **Flex recipe `when@prod`:** default profile `timeout: 120`, `max_source_bytes: 20MiB`, `check_on_boot: true` / `boot_failure: exception`. Prefer **`^1.2.7`**.
+
+[1.2.7]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.7
 
 ## [1.2.6] - 2026-08-19
 

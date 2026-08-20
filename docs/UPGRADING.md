@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.2.7](#to-127)
 - [To 1.2.6](#to-126)
 - [To 1.2.5](#to-125)
 - [To 1.2.4](#to-124)
@@ -16,6 +17,14 @@
 - [Version 1.x](#version-1x)
 
 ## Unreleased
+
+## To 1.2.7
+
+From **1.2.6** — Review Flex `when@prod` LibreOffice timeouts and `max_source_bytes`. Prefer **`^1.2.7`**. Hosts must only pass trusted upload paths.
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
 
 ## To 1.2.6
 
