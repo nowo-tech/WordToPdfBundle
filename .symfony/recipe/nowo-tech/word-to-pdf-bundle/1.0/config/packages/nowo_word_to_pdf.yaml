@@ -2,6 +2,7 @@
 #
 # System requirement: LibreOffice Writer (e.g. apt install libreoffice-writer).
 # Verify: php bin/console nowo:word-to-pdf:check
+# Host must only pass trusted upload paths (never user-controlled absolute paths).
 
 nowo_word_to_pdf:
     engine: libreoffice
@@ -22,3 +23,12 @@ nowo_word_to_pdf:
                 storage: memory
                 local_path: null
                 flysystem_adapter: null
+
+when@prod:
+    nowo_word_to_pdf:
+        profiles:
+            default:
+                timeout: 120
+                max_source_bytes: 20971520
+                check_on_boot: true
+                boot_failure: exception
