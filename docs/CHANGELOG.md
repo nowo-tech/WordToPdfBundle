@@ -21,6 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+## [1.2.8] - 2026-08-24
+
+### Changed
+
+- **Docs:** PHP-FIG PSR evaluation (REQ-CS-007).
+
+### Notes
+
+- **No API or configuration changes** for integrators unless noted above.
+
+[1.2.8]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.8
+
 ## [1.2.7] - 2026-08-20
 
 ### Security

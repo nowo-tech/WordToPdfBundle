@@ -2,6 +2,8 @@
 
 ## Table of contents
 
+
+- [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
 - [To 1.2.7](#to-127)
 - [To 1.2.6](#to-126)
@@ -15,6 +17,22 @@
 - [To 1.1.0](#to-110)
 - [To 1.0.0 (initial release)](#to-100-initial-release)
 - [Version 1.x](#version-1x)
+
+## From 1.2.7 to 1.2.8
+
+No breaking changes. **No application upgrade steps.**
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+## From 1.2.7 to 1.2.8
+
+No breaking changes. **No application upgrade steps.**
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
 
 ## Unreleased
 
