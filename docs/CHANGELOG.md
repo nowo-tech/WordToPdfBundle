@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.9] - 2026-09-25](#129-2026-09-25)
+- [[1.2.8] - 2026-08-24](#128-2026-08-24)
 - [[1.2.7] - 2026-08-20](#127-2026-08-20)
 - [[1.2.5] - 2026-08-18](#125-2026-08-18)
 - [[1.2.4] - 2026-08-07](#124-2026-08-07)
@@ -21,6 +23,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+## [1.2.9] - 2026-09-25
+
+### Fixed
+
+- **FrankenPHP worker / `FRANKENPHP_RESET_KERNEL` unset/false:** `WordToPdfBundle::getContainerExtension()` is stateless; `RuntimeBootCheckListener` implements `ResetInterface` with a no-op `reset()` so the LibreOffice boot probe stays once-per-worker when `services_resetter` runs (**REQ-RUNTIME-002**).
+
+### Changed
+
+- PHPStan includes `ruleset-worker-no-kernel-reset.neon` (replacing plain `ruleset-worker.neon`).
+- Docs: [`FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md), worker-without-kernel-reset section in `DEMO-FRANKENPHP.md`, INSTALLATION / SECURITY notes; specs US-05 / FR-RUNTIME-003 / SC-04.
+
+### Compatibility
+
+- Unchanged from 1.2.8. Safe drop-in for PHP-FPM and FrankenPHP worker.
+
+[1.2.9]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.9
 
 ## [1.2.8] - 2026-08-24
 

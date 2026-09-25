@@ -48,3 +48,4 @@ Exit code `0` means LibreOffice Writer is ready. Exit code `1` prints install in
 - Prefer installing fonts used by your documents inside the container/image for best fidelity.
   Without matching fonts, LibreOffice often exports **tofu boxes (□□□)** instead of glyphs.
   The FrankenPHP demo image installs Liberation, DejaVu, and Noto (incl. CJK/emoji) for this reason.
+- **FrankenPHP worker** with **`FRANKENPHP_RESET_KERNEL` unset/false** is supported (stateless shared services; see [DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md#worker-mode-without-kernel-reset) and [FRANKENPHP-WORKER-AUDIT.md](FRANKENPHP-WORKER-AUDIT.md)).

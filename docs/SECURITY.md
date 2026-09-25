@@ -76,6 +76,7 @@ Not applicable; no custom cryptography in this bundle.
 - `proc_open` must not be disabled (`disable_functions`).
 - The same Process-based conversion works under PHP-FPM and FrankenPHP.
 - Always configure profile `timeout` and keep PHP / reverse-proxy deadlines **above** it. On timeout the bundle force-stops the Symfony Process and tries to reap LibreOffice children (`UserInstallation` profile) so FrankenPHP workers are not left with open `soffice` processes.
+- Compatible with FrankenPHP worker when **`FRANKENPHP_RESET_KERNEL` is unset/false** (kernel reused). See [FRANKENPHP-WORKER-AUDIT.md](FRANKENPHP-WORKER-AUDIT.md).
 
 ## REQ-SEC-004
 

@@ -89,7 +89,7 @@ make release-check
 
 FrankenPHP worker mode: Supported (tested with LibreOffice conversion under FrankenPHP).
 
-The demo runs under FrankenPHP. Conversion uses Symfony Process with a hard **timeout** (and idle timeout); on expiry the runner stops the process tree so workers are not left with orphaned LibreOffice children (**REQ-RUNTIME-001**). Align PHP / Caddy deadlines above the profile timeout.
+The demo runs under FrankenPHP. Conversion uses Symfony Process with a hard **timeout** (and idle timeout); on expiry the runner stops the process tree so workers are not left with orphaned LibreOffice children (**REQ-RUNTIME-001**). Align PHP / Caddy deadlines above the profile timeout. Compatible with **`FRANKENPHP_RESET_KERNEL` unset/false** — see [docs/FRANKENPHP-WORKER-AUDIT.md](docs/FRANKENPHP-WORKER-AUDIT.md).
 
 Demos use **`FRANKENPHP_MODE`** (`worker` by default, or `classic`) on PHP **8.5** — see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md). Change mode in `.env` and recreate containers (`docker compose up -d`); no image rebuild.
 
@@ -117,6 +117,7 @@ cd demo/symfony8 && cp .env.example .env && make up   # Symfony 8, port 8022
 
 - [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [FrankenPHP / Docker demo](docs/DEMO-FRANKENPHP.md) — `demo/symfony8` (see [`demo/README.md`](demo/README.md))
+- [FrankenPHP worker audit (no kernel reset)](docs/FRANKENPHP-WORKER-AUDIT.md)
 
 ## Tests and coverage
 

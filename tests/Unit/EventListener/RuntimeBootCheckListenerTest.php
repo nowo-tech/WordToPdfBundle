@@ -65,6 +65,23 @@ final class RuntimeBootCheckListenerTest extends TestCase
         $listener->onKernelRequest($this->mainRequestEvent());
     }
 
+    public function testProbeRunsOncePerWorkerEvenAfterReset(): void
+    {
+        $checker = $this->createMock(RuntimeRequirementsChecker::class);
+        $checker->expects(self::once())->method('assertReady')->willReturn('/usr/bin/soffice');
+
+        $listener = new RuntimeBootCheckListener(
+            true,
+            'exception',
+            $checker,
+            new ProfileResolver(['default' => []], 'default'),
+        );
+
+        $listener->onKernelRequest($this->mainRequestEvent());
+        $listener->reset(); // services_resetter under FRANKENPHP_RESET_KERNEL=false
+        $listener->onKernelRequest($this->mainRequestEvent());
+    }
+
     public function testSubscribedEvents(): void
     {
         self::assertArrayHasKey('kernel.request', RuntimeBootCheckListener::getSubscribedEvents());

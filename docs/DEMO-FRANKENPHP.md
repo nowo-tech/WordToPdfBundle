@@ -10,6 +10,7 @@ The repository includes an **optional Symfony demo app** under `demo/symfony8` (
 - [PHP version and FRANKENPHP_MODE](#php-version-and-frankenphp_mode)
 - [Development vs production (FrankenPHP worker mode)](#development-vs-production-frankenphp-worker-mode)
 - [Timeouts (avoid stuck FrankenPHP workers / orphaned soffice)](#timeouts-avoid-stuck-frankenphp-workers--orphaned-soffice)
+- [Worker mode without kernel reset](#worker-mode-without-kernel-reset)
 - [Demo page](#demo-page)
 - [LibreOffice in the image](#libreoffice-in-the-image)
 - [Troubleshooting](#troubleshooting)
@@ -88,6 +89,16 @@ profiles:
 - **Default:** `180` seconds.
 - **Hierarchy:** `PROCESS_TIMEOUT` &lt; PHP `max_execution_time` (240) &lt; Caddy write (250).
 - When raising `PROCESS_TIMEOUT`, raise PHP + Caddy write timeouts in the same step.
+
+## Worker mode without kernel reset
+
+This bundle is designed for FrankenPHP **worker** with **`FRANKENPHP_RESET_KERNEL` unset/false** (kernel instance reused across requests):
+
+- Shared services are `readonly` / per-call state only (paths and options are method arguments).
+- `RuntimeBootCheckListener` implements `ResetInterface` with a **no-op** `reset()` so the LibreOffice boot probe stays **once per worker** when `services_resetter` still runs.
+- LibreOffice runs as an out-of-process child with wall-clock + idle timeouts and orphan cleanup (**REQ-RUNTIME-001**).
+- PHPStan uses `ruleset-worker-no-kernel-reset.neon` (see [`phpstan.neon.dist`](../phpstan.neon.dist)).
+- Full matrix: [`FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md).
 
 ## Demo page
 

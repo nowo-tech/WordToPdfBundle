@@ -12,11 +12,15 @@ use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Optional boot-time check when profile check_on_boot is true.
+ *
+ * Under FrankenPHP worker with FRANKENPHP_RESET_KERNEL unset/false, {@see reset()} is a no-op so
+ * the once-per-worker probe is not repeated on every request (REQ-RUNTIME-002).
  */
-final class RuntimeBootCheckListener implements EventSubscriberInterface
+final class RuntimeBootCheckListener implements EventSubscriberInterface, ResetInterface
 {
     private bool $checked = false;
 
@@ -52,7 +56,16 @@ final class RuntimeBootCheckListener implements EventSubscriberInterface
     }
 
     /**
-     * Optionally assert LibreOffice readiness on the first request.
+     * No-op: {@see $checked} must survive services_resetter so LibreOffice is probed once per worker.
+     *
+     * @return void
+     */
+    public function reset(): void
+    {
+    }
+
+    /**
+     * Optionally assert LibreOffice readiness on the first request of this worker.
      *
      * @param RequestEvent $event Kernel request event
      *

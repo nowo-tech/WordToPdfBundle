@@ -3,6 +3,7 @@
 ## Table of contents
 
 
+- [From 1.2.8 to 1.2.9](#from-128-to-129)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
 - [To 1.2.7](#to-127)
@@ -18,13 +19,22 @@
 - [To 1.0.0 (initial release)](#to-100-initial-release)
 - [Version 1.x](#version-1x)
 
-## From 1.2.7 to 1.2.8
+## From 1.2.8 to 1.2.9
 
-No breaking changes. **No application upgrade steps.**
+No breaking public API changes. Safe to upgrade with:
 
 ```bash
 composer update nowo-tech/word-to-pdf-bundle
 ```
+
+### Behavioral notes (non-breaking)
+
+- FrankenPHP worker with **`FRANKENPHP_RESET_KERNEL` unset/false** is explicitly supported. The optional boot-check listener still probes LibreOffice **once per worker** even if `services_resetter` calls `reset()` between requests.
+- See [FRANKENPHP-WORKER-AUDIT.md](FRANKENPHP-WORKER-AUDIT.md) and [DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md#worker-mode-without-kernel-reset).
+
+### Breaking changes
+
+None.
 
 ## From 1.2.7 to 1.2.8
 
@@ -35,6 +45,8 @@ composer update nowo-tech/word-to-pdf-bundle
 ```
 
 ## Unreleased
+
+*(none yet)*
 
 ## To 1.2.7
 

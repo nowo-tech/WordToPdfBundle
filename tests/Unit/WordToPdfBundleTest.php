@@ -16,6 +16,8 @@ final class WordToPdfBundleTest extends TestCase
         $ext    = $bundle->getContainerExtension();
         self::assertInstanceOf(WordToPdfExtension::class, $ext);
         self::assertSame('nowo_word_to_pdf', $ext->getAlias());
-        self::assertSame($ext, $bundle->getContainerExtension());
+        // Stateless getContainerExtension() (FrankenPHP worker / no kernel reset): new instance each call.
+        self::assertInstanceOf(WordToPdfExtension::class, $bundle->getContainerExtension());
+        self::assertSame('nowo_word_to_pdf', $bundle->getContainerExtension()->getAlias());
     }
 }

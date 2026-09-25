@@ -10,6 +10,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Bundle name {@code WordToPdfBundle} is wired to the extension alias {@code nowo_word_to_pdf}.
+ *
+ * Stateless for FrankenPHP worker (FRANKENPHP_RESET_KERNEL unset/false): getContainerExtension()
+ * does not mutate instance state.
  */
 final class WordToPdfBundle extends Bundle
 {
@@ -20,10 +23,6 @@ final class WordToPdfBundle extends Bundle
      */
     public function getContainerExtension(): ExtensionInterface
     {
-        if (!$this->extension instanceof WordToPdfExtension) {
-            $this->extension = new WordToPdfExtension();
-        }
-
-        return $this->extension;
+        return new WordToPdfExtension();
     }
 }

@@ -63,6 +63,7 @@ Canonical keys: `nowo_word_to_pdf.default_profile` + `nowo_word_to_pdf.profiles`
 | REQ-DEMO-007 | `update-bundle` / path mount `/var/word-to-pdf-bundle` |
 | REQ-DEMO-010 | `FRANKENPHP_MODE` + FrankenPHP PHP 8.5 image |
 | REQ-RUNTIME-001 | Process timeouts + Caddy/PHP hierarchy |
+| REQ-RUNTIME-002 | FrankenPHP worker safe with `FRANKENPHP_RESET_KERNEL` unset/false |
 | REQ-MAKE-002 | Root `release-check` → `test-coverage` + `release-check-demos` |
 | REQ-SPECKIT-001 | `.cursor/skills/speckit-*` + `specs/001-baseline/` |
 

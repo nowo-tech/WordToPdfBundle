@@ -65,12 +65,14 @@ Production source count: every PHP class under `src/` plus `src/Resources/config
 
 ### User Story 5 — FrankenPHP / Process timeouts (Priority: P1)
 
-**US-05** — As an operator, conversion uses Symfony Process with timeouts so FrankenPHP workers are not left with orphaned `soffice` children.
+**US-05** — As an operator, conversion uses Symfony Process with timeouts so FrankenPHP workers are not left with orphaned `soffice` children, including when the kernel is **not** reset between requests (`FRANKENPHP_RESET_KERNEL` unset/false).
 
 **Acceptance Scenarios**:
 
 1. **Given** profile `timeout: N`, **When** LibreOffice exceeds N seconds, **Then** `ConversionFailedException` (timed out) is thrown and the process is stopped.
 2. **Given** a hanging binary, **When** idle timeout elapses, **Then** the same failure path runs (no endless worker block).
+3. **Given** FrankenPHP worker with kernel reuse and `check_on_boot: true`, **When** multiple main requests hit the same worker, **Then** the LibreOffice boot probe runs at most once (`RuntimeBootCheckListener::reset()` is a no-op).
+4. **Given** `phpstan.neon.dist` includes `ruleset-worker-no-kernel-reset.neon`, **When** `composer phpstan` runs, **Then** analysis passes with no `frankenphp.worker.noMissingResetInterface` errors on bundle services.
 
 ---
 
@@ -85,11 +87,13 @@ Production source count: every PHP class under `src/` plus `src/Resources/config
 | FR-CONVERT-002 | ProfileResolver merges default → named → ad-hoc; `resolveInline` skips YAML. |
 | FR-RUNTIME-001 | Binary locator finds `soffice`/`libreoffice`; checker asserts readiness / min version. |
 | FR-RUNTIME-002 | ProcessRunner applies timeout + idle timeout; force-stops and reaps orphans on failure (**REQ-RUNTIME-001**). |
+| FR-RUNTIME-003 | Bundle is safe under FrankenPHP worker with `FRANKENPHP_RESET_KERNEL` unset/false (**REQ-RUNTIME-002**): no request-scoped leaks; boot-check `reset()` is a no-op; PHPStan `ruleset-worker-no-kernel-reset`. |
 | FR-EXPORT-001 | PdfExporter implements stream/binary/file/Flysystem export. |
 | FR-CLI-001 | `nowo:word-to-pdf:check` prints diagnose and exit codes. |
-| FR-BOOT-001 | Optional request listener boot-checks LibreOffice. |
+| FR-BOOT-001 | Optional request listener boot-checks LibreOffice once per worker. |
 | FR-ERR-001 | Typed exceptions implement `WordToPdfExceptionInterface`. |
 | FR-DI-001 | `services.yaml` + sample `nowo_word_to_pdf.yaml` ship under Resources. |
+| FR-NAMING-001 | `PdfNaming` + `convertMany()` support batch naming. |
 
 ## Success Criteria
 
@@ -98,6 +102,7 @@ Production source count: every PHP class under `src/` plus `src/Resources/config
 | SC-01 | `composer coverage-check` reports 100% PHP lines. |
 | SC-02 | `make release-check` passes (including demo HTTP smoke when demos present). |
 | SC-03 | FrankenPHP demo documents timeout hierarchy and `FRANKENPHP_MODE`. |
+| SC-04 | `docs/FRANKENPHP-WORKER-AUDIT.md` records a viable verdict for scenario B (no kernel reset). |
 
 ## Out of scope
 

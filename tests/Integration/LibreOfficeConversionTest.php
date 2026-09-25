@@ -12,8 +12,6 @@ use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
-use function dirname;
-
 /**
  * Requires LibreOffice Writer (libreoffice-writer / soffice) on the host.
  */
@@ -28,7 +26,7 @@ final class LibreOfficeConversionTest extends TestCase
             self::markTestSkipped('LibreOffice Writer (soffice) is not installed. Install libreoffice-writer to run this test.');
         }
 
-        $fixture = dirname(__DIR__) . '/Fixtures/minimal.docx';
+        $fixture = __DIR__ . '/../Fixtures/minimal.docx';
         if (!is_file($fixture)) {
             self::markTestSkipped('Fixture minimal.docx missing.');
         }

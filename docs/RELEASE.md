@@ -11,6 +11,7 @@ After creating the release commit and tag, run `make check-no-cursor-coauthor` a
 
 ## Table of contents
 
+- [Example for v1.2.9](#example-for-v129)
 - [Example for v1.2.4](#example-for-v124)
 - [Example for v1.2.3](#example-for-v123)
 - [Example for v1.2.2](#example-for-v122)
@@ -20,6 +21,23 @@ After creating the release commit and tag, run `make check-no-cursor-coauthor` a
 - [Example for v1.1.0](#example-for-v110)
 - [Example for v1.0.0](#example-for-v100)
 - [Sync missing releases](#sync-missing-releases)
+
+## Example for v1.2.9
+
+```bash
+git add -A
+git status   # review
+make release-check
+git commit -m "$(cat <<'EOF'
+Release 1.2.9: FrankenPHP worker no-kernel-reset compatibility.
+
+EOF
+)"
+git tag -a v1.2.9 -m "Release v1.2.9"
+make check-no-cursor-coauthor
+git push origin main
+git push origin v1.2.9
+```
 
 ## Example for v1.2.4
 

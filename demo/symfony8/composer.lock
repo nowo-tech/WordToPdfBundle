@@ -200,7 +200,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/word-to-pdf-bundle",
-                "reference": "0a1087f1ae2bb98bedb3b1e8fb955655faf04935"
+                "reference": "d78f6d06166edd071a8c1d809a53b07a2d377ef4"
             },
             "require": {
                 "ext-fileinfo": "*",

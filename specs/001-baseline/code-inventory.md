@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/word-to-pdf-bundle`  
-**Last audited**: 2026-07-22
+**Last audited**: 2026-09-25
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. Test-only files under `tests/` and demo trees are out of Packagist scope unless promoted in the spec.
 
@@ -10,23 +10,23 @@ This file proves that **every production source artifact** under `src/` is refer
 
 | Category | Count |
 | --- | --- |
-| PHP classes / interfaces | 21 |
+| PHP classes / interfaces | 22 |
 | Symfony YAML under `Resources/config` | 2 |
-| **Total inventory rows** | **23** |
+| **Total inventory rows** | **24** |
 
 ## PHP classes (`src/**/*.php`)
 
 | Source file | Spec section | Requirement IDs |
 | --- | --- | --- |
-| `WordToPdfBundle.php` | Bundle entry | FR-BUNDLE-001 |
+| `WordToPdfBundle.php` | Bundle entry | FR-BUNDLE-001, FR-RUNTIME-003 |
 | `Command/CheckRuntimeCommand.php` | CLI check | FR-CLI-001, US-03 |
 | `Config/ProfileResolver.php` | Profile merge | FR-CONVERT-002, US-02 |
 | `Config/ResolvedConfig.php` | Resolved profile DTO | FR-CONVERT-002, US-02 |
-| `Converter/WordToPdfConverterInterface.php` | Public API | FR-CONVERT-001, US-01 |
+| `Converter/WordToPdfConverterInterface.php` | Public API | FR-CONVERT-001, US-01, FR-NAMING-001 |
 | `Converter/WordToPdfConverter.php` | Convert + validate | FR-CONVERT-001, US-01, US-05 |
 | `DependencyInjection/Configuration.php` | Config tree | FR-CFG-001 |
 | `DependencyInjection/WordToPdfExtension.php` | DI extension | FR-CFG-002 |
-| `EventListener/RuntimeBootCheckListener.php` | Optional boot check | FR-BOOT-001, US-03 |
+| `EventListener/RuntimeBootCheckListener.php` | Optional boot check | FR-BOOT-001, FR-RUNTIME-003, US-03, US-05 |
 | `Exception/WordToPdfExceptionInterface.php` | Exception marker | FR-ERR-001 |
 | `Exception/ConversionFailedException.php` | Conversion errors | FR-ERR-001 |
 | `Exception/ExportException.php` | Export errors | FR-ERR-001, US-04 |
@@ -35,6 +35,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Exception/UnsupportedFormatException.php` | Bad extension | FR-ERR-001, US-01 |
 | `Export/ExporterInterface.php` | Export contract | FR-EXPORT-001, US-04 |
 | `Export/PdfExporter.php` | HTTP / file / Flysystem | FR-EXPORT-001, US-04 |
+| `Naming/PdfNaming.php` | Batch PDF naming | FR-NAMING-001 |
 | `Result/ConvertedPdf.php` | PDF result handle | FR-CONVERT-001, US-04 |
 | `Runtime/LibreOfficeBinaryLocator.php` | Find soffice | FR-RUNTIME-001, US-03 |
 | `Runtime/RuntimeRequirementsChecker.php` | Assert Writer ready | FR-RUNTIME-001, US-03 |
