@@ -6,6 +6,7 @@
 - [From 1.2.8 to 1.2.9](#from-128-to-129)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
+- [To 1.2.10](#to-1210)
 - [To 1.2.7](#to-127)
 - [To 1.2.6](#to-126)
 - [To 1.2.5](#to-125)
@@ -46,7 +47,18 @@ composer update nowo-tech/word-to-pdf-bundle
 
 ## Unreleased
 
+## To 1.2.10
+
+From **1.2.9** — REQ-CS-008 Igor FrankenPHP worker audit (igor-php require-dev, igor.json, make igor).
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+php bin/console cache:clear
+```
+
 *(none yet)*
+- No application upgrade steps for require-dev Igor tooling (REQ-CS-008). Consumers do not pull `igor-php/igor-php` transitively.
+
 
 ## To 1.2.7
 
