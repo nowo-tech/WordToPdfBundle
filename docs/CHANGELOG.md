@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.1] - 2026-09-28](#131-2026-09-28)
 - [[1.3.0] - 2026-09-28](#130-2026-09-28)
 - [[1.2.10] - 2026-09-27](#1210-2026-09-27)
 - [[1.2.9] - 2026-09-25](#129-2026-09-25)
@@ -25,7 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-09-28
+
+### Fixed
+
+- Style: PHP CS Fixer for `max_batch_size` validation message formatting (CI code style).
+
 ## [1.3.0] - 2026-09-28
+
 
 ### Security
 

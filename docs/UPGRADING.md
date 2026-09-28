@@ -48,6 +48,15 @@ composer update nowo-tech/word-to-pdf-bundle
 
 ## Unreleased
 
+## To 1.3.1
+
+From **1.3.0** — CI style only. **No application upgrade steps.**
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+
 ## To 1.3.0
 
 From **1.2.10** — `max_batch_size` on `convertMany`.
