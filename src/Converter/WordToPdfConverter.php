@@ -133,11 +133,7 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
         }
 
         if (count($jobs) > $this->maxBatchSize) {
-            throw new ConversionFailedException(sprintf(
-                'convertMany accepts at most %d sources (got %d). Increase nowo_word_to_pdf.max_batch_size if needed.',
-                $this->maxBatchSize,
-                count($jobs),
-            ));
+            throw new ConversionFailedException(sprintf('convertMany accepts at most %d sources (got %d). Increase nowo_word_to_pdf.max_batch_size if needed.', $this->maxBatchSize, count($jobs)));
         }
 
         $converted = [];
