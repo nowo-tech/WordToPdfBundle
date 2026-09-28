@@ -17,6 +17,7 @@ use Throwable;
 
 use function array_replace_recursive;
 use function class_exists;
+use function count;
 use function filesize;
 use function in_array;
 use function is_file;
@@ -48,6 +49,7 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
         private ProfileResolver $profileResolver,
         private RuntimeRequirementsChecker $requirementsChecker,
         private LibreOfficeProcessRunner $processRunner,
+        private int $maxBatchSize = 10,
     ) {
     }
 
@@ -128,6 +130,14 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
         $jobs = $this->normalizeBatchSources($sources);
         if ($jobs === []) {
             throw new ConversionFailedException('convertMany requires at least one Word source path.');
+        }
+
+        if (count($jobs) > $this->maxBatchSize) {
+            throw new ConversionFailedException(sprintf(
+                'convertMany accepts at most %d sources (got %d). Increase nowo_word_to_pdf.max_batch_size if needed.',
+                $this->maxBatchSize,
+                count($jobs),
+            ));
         }
 
         $converted = [];

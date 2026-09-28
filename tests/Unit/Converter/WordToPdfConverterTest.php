@@ -264,6 +264,31 @@ final class WordToPdfConverterTest extends TestCase
         $converter->convertMany(['']);
     }
 
+    public function testConvertManyExceedsMaxBatchSizeThrows(): void
+    {
+        $paths = [];
+        for ($i = 0; $i < 11; ++$i) {
+            $paths[] = $this->makeFakeDocxNamed('batch_' . $i . '.docx');
+        }
+
+        $converter = new WordToPdfConverter(
+            new ProfileResolver(['default' => []], 'default'),
+            $this->createMock(RuntimeRequirementsChecker::class),
+            $this->createMock(LibreOfficeProcessRunner::class),
+            10,
+        );
+
+        try {
+            $this->expectException(ConversionFailedException::class);
+            $this->expectExceptionMessage('at most 10 sources');
+            $converter->convertMany($paths);
+        } finally {
+            foreach ($paths as $path) {
+                @unlink($path);
+            }
+        }
+    }
+
     private function createConverter(): WordToPdfConverter
     {
         return new WordToPdfConverter(

@@ -34,6 +34,7 @@ final class ConfigurationTest extends TestCase
 
         self::assertSame('libreoffice', $processed['engine']);
         self::assertSame('default', $processed['default_profile']);
+        self::assertSame(10, $processed['max_batch_size']);
         self::assertSame(90, $processed['profiles']['default']['timeout']);
         self::assertSame('pdf:writer_pdf_Export', $processed['profiles']['default']['filter']);
     }
@@ -72,6 +73,7 @@ final class ConfigurationTest extends TestCase
 
         self::assertTrue($container->hasParameter('nowo_word_to_pdf.profiles'));
         self::assertSame('default', $container->getParameter('nowo_word_to_pdf.default_profile'));
+        self::assertSame(10, $container->getParameter('nowo_word_to_pdf.max_batch_size'));
         self::assertSame(Configuration::ALIAS, $extension->getAlias());
     }
 }

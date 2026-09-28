@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\WordToPdfBundle\DependencyInjection;
 
+use Nowo\WordToPdfBundle\Converter\WordToPdfConverter;
 use Nowo\WordToPdfBundle\EventListener\RuntimeBootCheckListener;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,7 +33,11 @@ final class WordToPdfExtension extends Extension
 
         $container->setParameter(Configuration::ALIAS . '.engine', $config['engine']);
         $container->setParameter(Configuration::ALIAS . '.default_profile', $config['default_profile']);
+        $container->setParameter(Configuration::ALIAS . '.max_batch_size', $config['max_batch_size']);
         $container->setParameter(Configuration::ALIAS . '.profiles', $config['profiles']);
+
+        $converter = $container->getDefinition(WordToPdfConverter::class);
+        $converter->setArgument('$maxBatchSize', $config['max_batch_size']);
 
         $defaultProfile = $config['profiles'][$config['default_profile']];
         $bootCheck      = (bool) ($defaultProfile['check_on_boot'] ?? false);

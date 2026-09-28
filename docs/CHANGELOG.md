@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.0] - 2026-09-28](#130-2026-09-28)
 - [[1.2.10] - 2026-09-27](#1210-2026-09-27)
 - [[1.2.9] - 2026-09-25](#129-2026-09-25)
 - [[1.2.8] - 2026-08-24](#128-2026-08-24)
@@ -24,12 +25,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-28
+
+### Security
+
+- `convertMany` respects `max_batch_size` (default **10**).
+
 ## [1.2.10] - 2026-09-27
 
 ### Added
 
 - **REQ-CS-008:** `igor-php/igor-php` (require-dev only), root `igor.json`, Composer/`Makefile` `igor` target, and `release-check` wiring for FrankenPHP worker-state audit.
 
+[1.3.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.3.0
 [1.2.10]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.10
 
 ## [1.2.9] - 2026-09-25
