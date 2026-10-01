@@ -7,6 +7,7 @@
 | Audit date | 2026-09-25 |
 | Method | Manual review of every PHP file under `src/` + PHPStan `ruleset-classic.neon` + `ruleset-worker-no-kernel-reset.neon` |
 | Remediation (2026-09-25) | `WordToPdfBundle::getContainerExtension()` made stateless; `RuntimeBootCheckListener` implements `ResetInterface` with a **no-op** `reset()` so the once-per-worker LibreOffice probe survives `services_resetter`; phpstan includes `ruleset-worker-no-kernel-reset.neon` |
+| Remediation (2026-10-01) | `$checked` marked `#[WorkerSafe]` so Igor IncompleteReset is silent while the probe remains once-per-worker |
 | **Verdict** | ✅ **Viable under scenario B** (and A) — no request-scoped state leaks; LibreOffice runs as an isolated child process with explicit timeouts |
 
 ## Execution model assumed
@@ -22,7 +23,7 @@ A bundle that is safe under **B** is safe under **A** and under classic mode / P
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Mutable state in shared services | ✅ | Only `RuntimeBootCheckListener::$checked` (intentional once-per-worker; `reset()` is a no-op) |
+| Mutable state in shared services | ✅ | Only `RuntimeBootCheckListener::$checked` (intentional once-per-worker; `#[WorkerSafe]`; `reset()` is a no-op) |
 | Static properties / `static` locals | ✅ | None that hold request data |
 | `ResetInterface` / `kernel.reset` | ✅ | Boot-check listener implements `ResetInterface`; `reset()` intentionally does **not** clear `$checked` |
 | Request / user / locale in services | ✅ | Paths, options and profiles are method arguments |
