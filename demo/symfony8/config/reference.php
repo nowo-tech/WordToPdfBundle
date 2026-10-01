@@ -752,6 +752,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type NowoWordToPdfConfig = array{
  *     engine?: scalar|Param|null, // Conversion backend: libreoffice (LibreOffice Writer / soffice). // Default: "libreoffice"
  *     default_profile?: scalar|Param|null, // Default: "default"
+ *     max_batch_size?: int|Param, // Maximum number of Word sources accepted by convertMany() (DoS guard). // Default: 10
  *     profiles?: array<string, array{ // Default: []
  *         binary_path?: scalar|Param|null, // Absolute path to soffice/libreoffice. Null = auto-detect. // Default: null
  *         temp_dir?: scalar|Param|null, // Writable temp directory. Null = sys_get_temp_dir(). // Default: null

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\WordToPdfBundle\EventListener;
 
+use IgorPhp\IgorBundle\Attribute\WorkerSafe;
 use Nowo\WordToPdfBundle\Config\ProfileResolver;
 use Nowo\WordToPdfBundle\Exception\MissingDependencyException;
 use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
@@ -22,6 +23,10 @@ use Symfony\Contracts\Service\ResetInterface;
  */
 final class RuntimeBootCheckListener implements EventSubscriberInterface, ResetInterface
 {
+    #[WorkerSafe(
+        scope: 'boot-time',
+        reason: 'Once-per-worker LibreOffice probe (REQ-RUNTIME-002); intentionally survives services_resetter',
+    )]
     private bool $checked = false;
 
     private readonly LoggerInterface $logger;
