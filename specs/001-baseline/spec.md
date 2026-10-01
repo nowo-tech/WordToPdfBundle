@@ -71,7 +71,7 @@ Production source count: every PHP class under `src/` plus `src/Resources/config
 
 1. **Given** profile `timeout: N`, **When** LibreOffice exceeds N seconds, **Then** `ConversionFailedException` (timed out) is thrown and the process is stopped.
 2. **Given** a hanging binary, **When** idle timeout elapses, **Then** the same failure path runs (no endless worker block).
-3. **Given** FrankenPHP worker with kernel reuse and `check_on_boot: true`, **When** multiple main requests hit the same worker, **Then** the LibreOffice boot probe runs at most once (`RuntimeBootCheckListener::reset()` is a no-op).
+3. **Given** FrankenPHP worker with kernel reuse and `check_on_boot: true`, **When** multiple main requests hit the same worker, **Then** the LibreOffice boot probe runs at most once (`RuntimeBootCheckListener::reset()` is a no-op; `$checked` is `#[WorkerSafe]` for Igor).
 4. **Given** `phpstan.neon.dist` includes `ruleset-worker-no-kernel-reset.neon`, **When** `composer phpstan` runs, **Then** analysis passes with no `frankenphp.worker.noMissingResetInterface` errors on bundle services.
 
 ---

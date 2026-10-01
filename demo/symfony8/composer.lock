@@ -200,7 +200,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/word-to-pdf-bundle",
-                "reference": "d78f6d06166edd071a8c1d809a53b07a2d377ef4"
+                "reference": "320e2d00b620035c6077b2a0b4d457630a2a31dc"
             },
             "require": {
                 "ext-fileinfo": "*",
@@ -215,6 +215,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "igor-php/igor-php": "^0.9.7",
                 "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^2.0",
@@ -278,6 +279,9 @@
                 ],
                 "rector-dry": [
                     "@php vendor/bin/rector --dry-run --no-progress-bar"
+                ],
+                "igor": [
+                    "igor-php --no-agent ."
                 ]
             },
             "license": [
