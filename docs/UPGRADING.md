@@ -6,6 +6,7 @@
 - [From 1.2.8 to 1.2.9](#from-128-to-129)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
+- [To 1.3.3](#to-133)
 - [To 1.3.2](#to-132)
 - [To 1.3.1](#to-131)
 - [To 1.3.0](#to-130)
@@ -49,6 +50,16 @@ composer update nowo-tech/word-to-pdf-bundle
 ```
 
 ## Unreleased
+
+## To 1.3.3
+
+From **1.3.2** — dependency updates only.
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+No breaking changes. **No application upgrade steps.**
 
 ## To 1.3.2
 
