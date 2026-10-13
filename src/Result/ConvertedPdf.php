@@ -17,12 +17,24 @@ final readonly class ConvertedPdf
      * @param string $path Absolute filesystem path to the PDF
      * @param bool $isTemporary Whether the file should be deleted on dispose
      * @param string $suggestedFilename Suggested download filename
+     * @param string|null $flysystemAdapter Service id from the profile's export.flysystem_adapter (null = exporter default)
      */
     public function __construct(
         private string $path,
         private bool $isTemporary,
         private string $suggestedFilename = 'document.pdf',
+        private ?string $flysystemAdapter = null,
     ) {
+    }
+
+    /**
+     * Flysystem service id configured on the conversion profile ({@code export.flysystem_adapter}), if any.
+     *
+     * @return string|null
+     */
+    public function flysystemAdapter(): ?string
+    {
+        return $this->flysystemAdapter;
     }
 
     /**

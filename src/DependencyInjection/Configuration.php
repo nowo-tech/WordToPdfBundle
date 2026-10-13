@@ -20,6 +20,8 @@ final class Configuration implements ConfigurationInterface
 {
     public const ALIAS = 'nowo_word_to_pdf';
 
+    public const PACKAGE = 'nowo-tech/word-to-pdf-bundle';
+
     /** @var list<string> */
     public const SUPPORTED_ENGINES = [
         'libreoffice',
@@ -99,9 +101,18 @@ final class Configuration implements ConfigurationInterface
                                 ->addDefaultsIfNotSet()
                                 ->children()
                                     ->scalarNode('filename')->defaultValue('document.pdf')->end()
-                                    ->scalarNode('storage')->defaultValue('memory')->end()
-                                    ->scalarNode('local_path')->defaultNull()->end()
-                                    ->scalarNode('flysystem_adapter')->defaultNull()->end()
+                                    ->scalarNode('storage')
+                                        ->defaultValue('memory')
+                                        ->setDeprecated(self::PACKAGE, '1.4', 'The "%path%.%node%" option is deprecated and has no effect: choose the target by calling the exporter (toStreamResponse/toBinaryResponse/toFile/toFlysystem).')
+                                    ->end()
+                                    ->scalarNode('local_path')
+                                        ->defaultNull()
+                                        ->setDeprecated(self::PACKAGE, '1.4', 'The "%path%.%node%" option is deprecated and has no effect: pass the path to PdfExporter::toFile().')
+                                    ->end()
+                                    ->scalarNode('flysystem_adapter')
+                                        ->defaultNull()
+                                        ->info('Service id of a League\\Flysystem\\FilesystemOperator used by PdfExporter::toFlysystem() for PDFs converted with this profile. Null = the exporter\'s injected $flysystem.')
+                                    ->end()
                                 ->end()
                             ->end()
                         ->end()

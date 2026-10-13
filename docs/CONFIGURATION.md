@@ -6,6 +6,8 @@ Root key: `nowo_word_to_pdf`.
 
 - [Profiles (REQ-CFG)](#profiles-req-cfg)
 - [Boot check](#boot-check)
+- [Flysystem export](#flysystem-export)
+- [Deprecated keys](#deprecated-keys)
 - [Sample file](#sample-file)
 
 ## Profiles (REQ-CFG)
@@ -26,9 +28,7 @@ nowo_word_to_pdf:
             filter: pdf:writer_pdf_Export
             export:
                 filename: document.pdf
-                storage: memory
-                local_path: null
-                flysystem_adapter: null
+                flysystem_adapter: null   # service id of a League\Flysystem\FilesystemOperator (see below)
         batch:
             timeout: 300
             export:
@@ -46,6 +46,31 @@ When `check_on_boot: true` on the default profile, a kernel request listener ass
 
 - `boot_failure: exception` — throws `MissingDependencyException`
 - `boot_failure: warning` — logs a warning and continues
+
+## Flysystem export
+
+`PdfExporter::toFlysystem()` writes to:
+
+1. the service named by the profile's `export.flysystem_adapter` (every id used in `profiles` is exposed to the exporter through a service locator; a missing service fails at container compile, ids not declared in YAML are never reachable; profiles merge over `default`, so setting it there applies to all), or
+2. when the profile sets none, the exporter's `$flysystem` argument:
+
+```yaml
+services:
+    Nowo\WordToPdfBundle\Export\PdfExporter:
+        arguments:
+            $flysystem: '@your.filesystem.operator.service.id'
+```
+
+`ExportException` is thrown when neither is available or the service is not a `League\Flysystem\FilesystemOperator`.
+
+## Deprecated keys
+
+Deprecated since **1.4** (they never had any effect; setting them now triggers a Symfony deprecation, removal planned for the next major):
+
+| Key | Replacement |
+|-----|-------------|
+| `export.storage` | Pick the target by calling the exporter: `toStreamResponse()` / `toBinaryResponse()` / `toFile()` / `toFlysystem()`. |
+| `export.local_path` | Pass the path to `PdfExporter::toFile()`. |
 
 ## Sample file
 

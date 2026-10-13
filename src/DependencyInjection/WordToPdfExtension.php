@@ -6,10 +6,17 @@ namespace Nowo\WordToPdfBundle\DependencyInjection;
 
 use Nowo\WordToPdfBundle\Converter\WordToPdfConverter;
 use Nowo\WordToPdfBundle\EventListener\RuntimeBootCheckListener;
+use Nowo\WordToPdfBundle\Export\PdfExporter;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
+
+use function is_string;
+use function ksort;
+use function trim;
 
 /**
  * DI extension for alias nowo_word_to_pdf.
@@ -49,6 +56,34 @@ final class WordToPdfExtension extends Extension
         if (!$bootCheck) {
             $listener->clearTag('kernel.event_subscriber');
         }
+
+        $this->registerFlysystemAdapters($container, $config['profiles']);
+    }
+
+    /**
+     * Exposes every {@code profiles.*.export.flysystem_adapter} service id to {@see PdfExporter} through a
+     * service locator (only ids declared in YAML are reachable; a missing service fails at container compile).
+     *
+     * @param array<string, array<string, mixed>> $profiles
+     */
+    private function registerFlysystemAdapters(ContainerBuilder $container, array $profiles): void
+    {
+        $refs = [];
+        foreach ($profiles as $profile) {
+            $id = $profile['export']['flysystem_adapter'] ?? null;
+            if (is_string($id) && trim($id) !== '') {
+                $id        = trim($id);
+                $refs[$id] = new Reference($id);
+            }
+        }
+
+        if ($refs === []) {
+            return;
+        }
+
+        ksort($refs);
+        $container->getDefinition(PdfExporter::class)
+            ->setArgument('$flysystemAdapters', ServiceLocatorTagPass::register($container, $refs));
     }
 
     /**

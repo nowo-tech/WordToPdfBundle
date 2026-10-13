@@ -4,28 +4,49 @@ declare(strict_types=1);
 
 namespace Nowo\WordToPdfBundle\Runtime;
 
+use FilesystemIterator;
 use Nowo\WordToPdfBundle\Config\ResolvedConfig;
 use Nowo\WordToPdfBundle\Exception\MissingDependencyException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\Service\ResetInterface;
 
 use function is_dir;
 use function is_writable;
+use function mkdir;
 use function preg_match;
+use function rmdir;
 use function sprintf;
+use function sys_get_temp_dir;
 use function trim;
+use function uniqid;
+use function unlink;
 use function version_compare;
+
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Validates that LibreOffice Writer (system package libreoffice-writer) is installed and usable.
+ *
+ * {@code soffice --version} runs with a throw-away {@code -env:UserInstallation} profile (never the shared
+ * ~/.config/libreoffice one) and its result is memoized per binary path until {@see reset()} (kernel.reset,
+ * i.e. once per request under FrankenPHP worker mode), so batches and repeated checks spawn it only once.
  */
-class RuntimeRequirementsChecker
+class RuntimeRequirementsChecker implements ResetInterface
 {
+    /** @var array<string, string> binary path => version */
+    private array $versions = [];
+
     /**
      * @param LibreOfficeBinaryLocator $locator Binary locator
+     * @param float $versionTimeout Seconds allowed for {@code soffice --version}
      */
     public function __construct(
         private readonly LibreOfficeBinaryLocator $locator,
+        private readonly float $versionTimeout = 15.0,
     ) {
     }
 
@@ -61,6 +82,14 @@ class RuntimeRequirementsChecker
         }
 
         return $binary;
+    }
+
+    /**
+     * Forget memoized LibreOffice versions (kernel.reset).
+     */
+    public function reset(): void
+    {
+        $this->versions = [];
     }
 
     /**
@@ -116,14 +145,28 @@ class RuntimeRequirementsChecker
 
     private function readVersion(string $binary): ?string
     {
-        $process = new Process([$binary, '--version']);
-        $process->setTimeout(15);
-        $process->setIdleTimeout(15);
+        if (isset($this->versions[$binary])) {
+            return $this->versions[$binary];
+        }
+
+        $profileDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'word_to_pdf_version_' . uniqid('', true);
+        // @codeCoverageIgnoreStart
+        if (!@mkdir($profileDir, 0700, true) && !is_dir($profileDir)) {
+            return null;
+        }
+        // @codeCoverageIgnoreEnd
+
+        $process = new Process([$binary, '-env:UserInstallation=file://' . $profileDir, '--version']);
+        $process->setTimeout($this->versionTimeout);
+        $process->setIdleTimeout($this->versionTimeout);
 
         try {
             $process->mustRun();
-        } catch (ProcessFailedException) {
+        } catch (ProcessTimedOutException|ProcessFailedException) {
+            // Failures are not memoized: a transient error must not disable the check for the worker's lifetime.
             return null;
+        } finally {
+            $this->removeDir($profileDir);
         }
 
         $output = trim($process->getOutput() . "\n" . $process->getErrorOutput());
@@ -134,11 +177,25 @@ class RuntimeRequirementsChecker
         // @codeCoverageIgnoreEnd
 
         if (preg_match('/(\d+\.\d+(?:\.\d+)?)/', $output, $m) === 1) {
-            return $m[1];
+            return $this->versions[$binary] = $m[1];
         }
 
         // @codeCoverageIgnoreStart
         return null;
         // @codeCoverageIgnoreEnd
+    }
+
+    private function removeDir(string $dir): void
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
+        );
+
+        foreach ($iterator as $item) {
+            $item->isDir() ? @rmdir($item->getPathname()) : @unlink($item->getPathname());
+        }
+
+        @rmdir($dir);
     }
 }

@@ -21,10 +21,13 @@ services:
         alias: Nowo\WordToPdfBundle\Converter\WordToPdfConverter
         public: true
 
+    # $flysystem: optional default FilesystemOperator (override in the app); $flysystemAdapters: service locator
+    # built by WordToPdfExtension from profiles.*.export.flysystem_adapter (null when no profile sets one).
     Nowo\WordToPdfBundle\Export\PdfExporter:
         public: true
         arguments:
             $flysystem: null
+            $flysystemAdapters: null
 
     Nowo\WordToPdfBundle\Export\ExporterInterface:
         alias: Nowo\WordToPdfBundle\Export\PdfExporter

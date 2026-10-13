@@ -28,6 +28,7 @@ use function sprintf;
 use function str_ends_with;
 use function str_starts_with;
 use function strtolower;
+use function trim;
 
 use const FILEINFO_MIME_TYPE;
 use const PATHINFO_EXTENSION;
@@ -183,7 +184,10 @@ final readonly class WordToPdfConverter implements WordToPdfConverterInterface
             $filename .= '.pdf';
         }
 
-        return new ConvertedPdf($pdfPath, true, $filename);
+        $adapter = $config->export['flysystem_adapter'] ?? null;
+        $adapter = is_string($adapter) && trim($adapter) !== '' ? trim($adapter) : null;
+
+        return new ConvertedPdf($pdfPath, true, $filename, $adapter);
     }
 
     private function assertSource(string $sourcePath, ResolvedConfig $config): void

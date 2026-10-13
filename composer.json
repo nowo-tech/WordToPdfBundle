@@ -30,12 +30,13 @@
         "php": ">=8.2 <8.6",
         "ext-fileinfo": "*",
         "league/flysystem": "^3.16",
-        "symfony/config": "^7.0 || ^8.0",
-        "symfony/console": "^7.0 || ^8.0",
-        "symfony/dependency-injection": "^7.0 || ^8.0",
-        "symfony/http-foundation": "^7.0 || ^8.0",
-        "symfony/http-kernel": "^7.0 || ^8.0",
-        "symfony/process": "^7.0 || ^8.0"
+        "symfony/config": "^7.4 || ^8.0",
+        "symfony/console": "^7.4 || ^8.0",
+        "symfony/dependency-injection": "^7.4 || ^8.0",
+        "symfony/http-foundation": "^7.4 || ^8.0",
+        "symfony/http-kernel": "^7.4 || ^8.0",
+        "symfony/process": "^7.4 || ^8.0",
+        "symfony/yaml": "^7.4 || ^8.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
@@ -47,8 +48,7 @@
         "phpstan/phpstan-symfony": "^2.0",
         "phpunit/phpunit": "^11.0",
         "rector/rector": "^2.0",
-        "symfony/framework-bundle": "^7.0 || ^8.0",
-        "symfony/yaml": "^7.0 || ^8.0"
+        "symfony/framework-bundle": "^7.4 || ^8.0"
     },
     "autoload": {
         "psr-4": {

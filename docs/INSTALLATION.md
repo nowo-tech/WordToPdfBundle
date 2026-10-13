@@ -10,7 +10,7 @@
 ## Requirements
 
 - PHP `>=8.2 <8.6`
-- Symfony 7 or 8 (`config`, `dependency-injection`, `http-kernel`, `http-foundation`, `console`, `process`)
+- Symfony 7.4+ or 8 (`config`, `dependency-injection`, `http-kernel`, `http-foundation`, `console`, `process`, `yaml`)
 - **LibreOffice Writer** on the system (`libreoffice-writer` / `soffice`) — **required**
 
 ### Install LibreOffice Writer

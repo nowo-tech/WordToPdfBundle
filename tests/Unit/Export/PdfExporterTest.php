@@ -9,6 +9,8 @@ use Nowo\WordToPdfBundle\Exception\ExportException;
 use Nowo\WordToPdfBundle\Export\PdfExporter;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 use PHPUnit\Framework\TestCase;
+use stdClass;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 
 final class PdfExporterTest extends TestCase
 {
@@ -97,5 +99,87 @@ final class PdfExporterTest extends TestCase
         $response = $exporter->toBinaryResponse(new ConvertedPdf($src, false, 'n.pdf'));
         self::assertSame('application/pdf', $response->headers->get('Content-Type'));
         @unlink($src);
+    }
+
+    public function testContentDispositionIsSafeForHostileAndUnicodeNames(): void
+    {
+        $exporter = new PdfExporter();
+
+        foreach (['stream', 'binary'] as $mode) {
+            $src = tempnam(sys_get_temp_dir(), 'wtp_pdf_');
+            self::assertNotFalse($src);
+            file_put_contents($src, '%PDF');
+            $pdf      = new ConvertedPdf($src, false, "inf\"orme\r\nX-Evil: 1/ñ.pdf");
+            $response = $mode === 'stream' ? $exporter->toStreamResponse($pdf) : $exporter->toBinaryResponse($pdf);
+            $header   = (string) $response->headers->get('Content-Disposition');
+            @unlink($src);
+
+            self::assertStringNotContainsString("\r", $header);
+            self::assertStringNotContainsString("\n", $header);
+            self::assertStringStartsWith('attachment; filename="inf_orme_X-Evil: 1__.pdf"', $header);
+            self::assertStringContainsString("filename*=utf-8''", $header);
+        }
+    }
+
+    public function testContentDispositionFallsBackForEmptyName(): void
+    {
+        $src = tempnam(sys_get_temp_dir(), 'wtp_pdf_');
+        self::assertNotFalse($src);
+        $response = (new PdfExporter())->toStreamResponse(new ConvertedPdf($src, false, " /\n "));
+        @unlink($src);
+
+        self::assertSame('attachment; filename=document.pdf', $response->headers->get('Content-Disposition'));
+    }
+
+    public function testProfileAdapterIsResolvedFromLocator(): void
+    {
+        $src = tempnam(sys_get_temp_dir(), 'wtp_pdf_');
+        self::assertNotFalse($src);
+        file_put_contents($src, '%PDF');
+
+        $fallback = $this->createMock(FilesystemOperator::class);
+        $fallback->expects(self::never())->method('writeStream');
+        $profileFs = $this->createMock(FilesystemOperator::class);
+        $profileFs->expects(self::once())->method('writeStream')->with('remote/a.pdf', self::isType('resource'));
+
+        $exporter = new PdfExporter($fallback, new ServiceLocator([
+            'app.storage' => static fn (): FilesystemOperator => $profileFs,
+        ]));
+        $exporter->toFlysystem(new ConvertedPdf($src, true, 'a.pdf', 'app.storage'), 'remote/a.pdf');
+        self::assertFileDoesNotExist($src);
+    }
+
+    public function testUnknownProfileAdapterThrowsAndKeepsPdf(): void
+    {
+        $src = tempnam(sys_get_temp_dir(), 'wtp_pdf_');
+        self::assertNotFalse($src);
+
+        try {
+            (new PdfExporter(null, new ServiceLocator([])))->toFlysystem(new ConvertedPdf($src, true, 'a.pdf', 'app.missing'), 'r.pdf');
+            self::fail('Expected ExportException');
+        } catch (ExportException $e) {
+            self::assertStringContainsString('Flysystem adapter "app.missing" is not available', $e->getMessage());
+            self::assertFileExists($src);
+        } finally {
+            @unlink($src);
+        }
+    }
+
+    public function testProfileAdapterWithoutLocatorThrows(): void
+    {
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('is not available');
+        (new PdfExporter())->toFlysystem(new ConvertedPdf('/nonexistent.pdf', false, 'a.pdf', 'app.storage'), 'r.pdf');
+    }
+
+    public function testProfileAdapterOfWrongTypeThrows(): void
+    {
+        $exporter = new PdfExporter(null, new ServiceLocator([
+            'app.storage' => static fn (): stdClass => new stdClass(),
+        ]));
+
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('must implement League\Flysystem\FilesystemOperator');
+        $exporter->toFlysystem(new ConvertedPdf('/nonexistent.pdf', false, 'a.pdf', 'app.storage'), 'r.pdf');
     }
 }

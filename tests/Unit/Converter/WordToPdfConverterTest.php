@@ -311,4 +311,34 @@ final class WordToPdfConverterTest extends TestCase
 
         return $path;
     }
+
+    public function testProfileFlysystemAdapterIsCarriedByConvertedPdf(): void
+    {
+        $docx = $this->makeFakeDocx();
+        $out  = sys_get_temp_dir() . '/wtp_out_' . uniqid('', true) . '.pdf';
+        file_put_contents($out, '%PDF');
+
+        $checker = $this->createMock(RuntimeRequirementsChecker::class);
+        $checker->method('assertReady')->willReturn('/usr/bin/soffice');
+        $runner = $this->createMock(LibreOfficeProcessRunner::class);
+        $runner->method('convert')->willReturn($out);
+
+        $converter = new WordToPdfConverter(
+            new ProfileResolver([
+                'default' => ['export' => ['flysystem_adapter' => ' app.pdf_storage ']],
+                'local'   => ['export' => ['flysystem_adapter' => '']],
+            ], 'default'),
+            $checker,
+            $runner,
+        );
+        $pdf = $converter->convert($docx);
+        self::assertSame('app.pdf_storage', $pdf->flysystemAdapter());
+        $pdf->dispose();
+
+        file_put_contents($out, '%PDF');
+        $pdf = $converter->convertWithProfile($docx, 'local');
+        self::assertNull($pdf->flysystemAdapter());
+        $pdf->dispose();
+        @unlink($docx);
+    }
 }

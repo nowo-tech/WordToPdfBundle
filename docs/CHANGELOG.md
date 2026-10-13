@@ -29,6 +29,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `export.flysystem_adapter` is now wired: every service id set in `profiles` is exposed to `PdfExporter` through a service locator and `toFlysystem()` uses the converting profile's adapter (`ConvertedPdf::flysystemAdapter()`); the injected `$flysystem` stays the fallback.
+- `Content-Disposition` of `toStreamResponse()` / `toBinaryResponse()` is built with `HeaderUtils::makeDisposition()` (ASCII fallback + `filename*`); quotes, CR/LF, path separators or non-ASCII characters in `export.filename` can no longer break or inject headers.
+- `min_version` check: `soffice --version` now runs with an isolated throw-away `-env:UserInstallation` profile, a version timeout is reported as an unreadable version (`MissingDependencyException`) instead of leaking `ProcessTimedOutException`, and the version is memoized per binary (cleared on `kernel.reset`; `RuntimeRequirementsChecker` now implements `ResetInterface`) instead of being spawned for every conversion of a batch/request.
+
+### Changed
+
+- Minimum Symfony version raised from 7.0 to **7.4** (the lowest version tested in CI).
+- `symfony/yaml` moved from `require-dev` to `require` (the extension loads `services.yaml` with `YamlFileLoader`).
+
+### Deprecated
+
+- `export.storage` and `export.local_path`: they never had any effect; setting them now triggers a deprecation (see docs/CONFIGURATION.md#deprecated-keys).
+
 ## [1.3.4] - 2026-10-13
 
 ### Changed

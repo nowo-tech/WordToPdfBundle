@@ -51,6 +51,11 @@ composer update nowo-tech/word-to-pdf-bundle
 
 ## Unreleased
 
+- **Symfony 7.4+** is now required (was 7.0+); 8.x unchanged.
+- **`export.flysystem_adapter`** is now used: when a profile sets it, `toFlysystem()` writes to that service (it must exist and implement `League\Flysystem\FilesystemOperator`, otherwise the container fails to compile or `ExportException` is thrown) instead of the injected `$flysystem`.
+- **Deprecated keys** (no effect, now trigger deprecations): `export.storage`, `export.local_path` — remove them from your YAML.
+- `Content-Disposition` now carries an ASCII `filename=` fallback plus `filename*=utf-8''…`; control characters and `/` `\` in `export.filename` are replaced by `_`.
+
 ## To 1.3.4
 
 From **1.3.3** — dependency refresh and repository maintenance.

@@ -69,7 +69,7 @@ use Nowo\WordToPdfBundle\Export\ExporterInterface;
 return $exporter->toBinaryResponse($pdf);
 // $exporter->toStreamResponse($pdf);
 // $exporter->toFile($pdf, '/path/out.pdf');
-// $exporter->toFlysystem($pdf, 'contracts/out.pdf'); // requires Flysystem injection
+// $exporter->toFlysystem($pdf, 'contracts/out.pdf'); // requires export.flysystem_adapter on the profile (or $flysystem injection)
 ```
 
 ## Runtime check
