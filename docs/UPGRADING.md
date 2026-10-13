@@ -5,6 +5,7 @@
 - [From 1.2.8 to 1.2.9](#from-128-to-129)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
+- [To 1.5.0](#to-150)
 - [To 1.4.0](#to-140)
 - [To 1.3.4](#to-134)
 - [To 1.3.3](#to-133)
@@ -51,6 +52,14 @@ composer update nowo-tech/word-to-pdf-bundle
 ```
 
 ## Unreleased
+
+## To 1.5.0
+
+From **1.4.0** — league/flysystem optional.
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
 
 - `league/flysystem` is no longer installed with the bundle (moved to `suggest`). If you call `PdfExporter::toFlysystem()` or set `export.flysystem_adapter`, run `composer require league/flysystem`.
 

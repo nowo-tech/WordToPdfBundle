@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.5.0] - 2026-10-13](#150-2026-10-13)
 - [[1.4.0] - 2026-10-13](#140-2026-10-13)
 - [[1.3.4] - 2026-10-13](#134-2026-10-13)
 - [[1.3.3] - 2026-10-09](#133-2026-10-09)
@@ -29,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [[1.0.0] - 2026-07-22](#100-2026-07-22)
 
 ## [Unreleased]
+
+## [1.5.0] - 2026-10-13
 
 ### Changed
 
@@ -70,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - **Igor IncompleteReset:** `RuntimeBootCheckListener::$checked` is marked `#[WorkerSafe]` (once-per-worker LibreOffice probe, **REQ-RUNTIME-002**) so `make igor` reports 0 WARN without changing the intentional no-op `reset()`.
 
+[1.5.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.5.0
 [1.4.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.4.0
 [1.3.4]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.3.4
 [1.3.3]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.3.3
