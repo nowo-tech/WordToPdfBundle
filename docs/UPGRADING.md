@@ -2,10 +2,10 @@
 
 ## Table of contents
 
-
 - [From 1.2.8 to 1.2.9](#from-128-to-129)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
+- [To 1.3.4](#to-134)
 - [To 1.3.3](#to-133)
 - [To 1.3.2](#to-132)
 - [To 1.3.1](#to-131)
@@ -51,6 +51,16 @@ composer update nowo-tech/word-to-pdf-bundle
 
 ## Unreleased
 
+## To 1.3.4
+
+From **1.3.3** — dependency refresh and repository maintenance.
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+- No breaking changes. No application upgrade steps.
+
 ## To 1.3.3
 
 From **1.3.2** — dependency updates only.
@@ -77,7 +87,6 @@ From **1.3.0** — CI style only. **No application upgrade steps.**
 composer update nowo-tech/word-to-pdf-bundle
 ```
 
-
 ## To 1.3.0
 
 From **1.2.10** — `max_batch_size` on `convertMany`.
@@ -99,7 +108,6 @@ php bin/console cache:clear
 ```
 
 - No application upgrade steps for require-dev Igor tooling (REQ-CS-008). Consumers do not pull `igor-php/igor-php` transitively.
-
 
 ## To 1.2.7
 

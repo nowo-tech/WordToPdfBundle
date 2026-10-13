@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.4] - 2026-10-13](#134-2026-10-13)
 - [[1.3.3] - 2026-10-09](#133-2026-10-09)
 - [[1.3.2] - 2026-10-01](#132-2026-10-01)
 - [[1.3.1] - 2026-09-28](#131-2026-09-28)
@@ -28,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.4] - 2026-10-13
+
 ### Changed
 
 - Development: `composer.json` pins `config.platform.php` to 8.2.0 so the committed lock stays installable on the minimum PHP; CI overrides the platform per matrix cell.
@@ -45,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - **Igor IncompleteReset:** `RuntimeBootCheckListener::$checked` is marked `#[WorkerSafe]` (once-per-worker LibreOffice probe, **REQ-RUNTIME-002**) so `make igor` reports 0 WARN without changing the intentional no-op `reset()`.
 
+[1.3.4]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.3.4
 [1.3.3]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.3.3
 [1.3.2]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.3.2
 [1.3.1]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.3.1
@@ -56,7 +60,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Style: PHP CS Fixer for `max_batch_size` validation message formatting (CI code style).
 
 ## [1.3.0] - 2026-09-28
-
 
 ### Security
 
