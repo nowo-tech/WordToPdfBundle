@@ -764,9 +764,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         filter?: scalar|Param|null, // LibreOffice convert-to filter string. // Default: "pdf:writer_pdf_Export"
  *         export?: array{
  *             filename?: scalar|Param|null, // Default: "document.pdf"
- *             storage?: scalar|Param|null, // Default: "memory"
- *             local_path?: scalar|Param|null, // Default: null
- *             flysystem_adapter?: scalar|Param|null, // Default: null
+ *             storage?: scalar|Param|null, // Deprecated: The "nowo_word_to_pdf.profiles..export.storage.storage" option is deprecated and has no effect: choose the target by calling the exporter (toStreamResponse/toBinaryResponse/toFile/toFlysystem). // Default: "memory"
+ *             local_path?: scalar|Param|null, // Deprecated: The "nowo_word_to_pdf.profiles..export.local_path.local_path" option is deprecated and has no effect: pass the path to PdfExporter::toFile(). // Default: null
+ *             flysystem_adapter?: scalar|Param|null, // Service id of a League\Flysystem\FilesystemOperator used by PdfExporter::toFlysystem() for PDFs converted with this profile. Null = the exporter's injected $flysystem. // Default: null
  *         },
  *     }>,
  * }
