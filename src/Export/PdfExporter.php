@@ -24,6 +24,9 @@ use function sprintf;
 use function trim;
 
 /**
+ * {@code league/flysystem} is optional (suggest): it is only needed for {@see toFlysystem()}; the other
+ * exporters never touch Flysystem classes.
+ *
  * {@see toFlysystem()} writes to the profile's {@code export.flysystem_adapter} service (resolved through
  * {@code $flysystemAdapters}, built from the bundle configuration) or, when the profile sets none, to the
  * injected {@code $flysystem} operator.
@@ -181,7 +184,7 @@ final readonly class PdfExporter implements ExporterInterface
         $id = $pdf->flysystemAdapter();
         if (!is_string($id) || trim($id) === '') {
             if (!$this->flysystem instanceof FilesystemOperator) {
-                throw new ExportException('Flysystem adapter is not configured for WordToPdfBundle exporter: set export.flysystem_adapter on the profile (or inject $flysystem).');
+                throw new ExportException('Flysystem adapter is not configured for WordToPdfBundle exporter: install league/flysystem and set export.flysystem_adapter on the profile (or inject $flysystem).');
             }
 
             return $this->flysystem;
@@ -194,7 +197,7 @@ final readonly class PdfExporter implements ExporterInterface
 
         $filesystem = $this->flysystemAdapters->get($id);
         if (!$filesystem instanceof FilesystemOperator) {
-            throw new ExportException(sprintf('Flysystem adapter "%s" must implement League\\Flysystem\\FilesystemOperator.', $id));
+            throw new ExportException(sprintf('Flysystem adapter "%s" must implement League\\Flysystem\\FilesystemOperator (is league/flysystem installed?).', $id));
         }
 
         return $filesystem;

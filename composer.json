@@ -29,7 +29,6 @@
     "require": {
         "php": ">=8.2 <8.6",
         "ext-fileinfo": "*",
-        "league/flysystem": "^3.16",
         "symfony/config": "^7.4 || ^8.0",
         "symfony/console": "^7.4 || ^8.0",
         "symfony/dependency-injection": "^7.4 || ^8.0",
@@ -41,6 +40,7 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
         "igor-php/igor-php": "^0.10.1",
+        "league/flysystem": "^3.16",
         "nowo-tech/phpstan-frankenphp": "^1.0",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan": "^2.0",
@@ -61,6 +61,7 @@
         }
     },
     "suggest": {
+        "league/flysystem": "Required for PdfExporter::toFlysystem() (export.flysystem_adapter)",
         "nowo-tech/word-template-bundle": "Optional: fill .docx templates before converting to PDF.",
         "nowo-tech/html-to-word-bundle": "Optional: build .docx from HTML before converting to PDF."
     },

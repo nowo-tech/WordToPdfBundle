@@ -4,6 +4,7 @@
 
 - [Requirements](#requirements)
 - [Composer](#composer)
+- [Optional: Flysystem](#optional-flysystem)
 - [Verify runtime](#verify-runtime)
 - [PHP runtime notes (FPM & FrankenPHP)](#php-runtime-notes-fpm-frankenphp)
 
@@ -12,6 +13,7 @@
 - PHP `>=8.2 <8.6`
 - Symfony 7.4+ or 8 (`config`, `dependency-injection`, `http-kernel`, `http-foundation`, `console`, `process`, `yaml`)
 - **LibreOffice Writer** on the system (`libreoffice-writer` / `soffice`) — **required**
+- [League Flysystem](https://github.com/thephpleague/flysystem) 3.x — optional, not installed by the bundle; only needed for `PdfExporter::toFlysystem()`
 
 ### Install LibreOffice Writer
 
@@ -32,6 +34,10 @@ composer require nowo-tech/word-to-pdf-bundle
 With Symfony Flex, the recipe copies `config/packages/nowo_word_to_pdf.yaml`.
 
 Without Flex, register the bundle and copy the sample from `vendor/nowo-tech/word-to-pdf-bundle/src/Resources/config/nowo_word_to_pdf.yaml`.
+
+## Optional: Flysystem
+
+`league/flysystem` is not installed with the bundle. To upload PDFs to a remote or custom filesystem, run `composer require league/flysystem`, define a `League\Flysystem\FilesystemOperator` service and either reference it from a profile (`export.flysystem_adapter: 'your.storage.id'`) or pass it as the `$flysystem` argument of `Nowo\WordToPdfBundle\Export\PdfExporter` (see [CONFIGURATION.md](CONFIGURATION.md#flysystem-export)).
 
 ## Verify runtime
 

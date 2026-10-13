@@ -52,6 +52,8 @@ composer update nowo-tech/word-to-pdf-bundle
 
 ## Unreleased
 
+- `league/flysystem` is no longer installed with the bundle (moved to `suggest`). If you call `PdfExporter::toFlysystem()` or set `export.flysystem_adapter`, run `composer require league/flysystem`.
+
 ## To 1.4.0
 
 From **1.3.4** — flysystem adapter wired, safe Content-Disposition, isolated soffice version check, Symfony >=7.4.

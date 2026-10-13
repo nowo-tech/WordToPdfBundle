@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- `league/flysystem` moved from `require` to `suggest` (+ `require-dev`): it is only used by `PdfExporter::toFlysystem()`, which already guards every Flysystem type; without it, `toFlysystem()` throws an `ExportException` asking to install it. A subprocess test loads the bundle and exports with Flysystem made unloadable.
+
 ## [1.4.0] - 2026-10-13
 
 ### Fixed
