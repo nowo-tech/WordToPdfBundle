@@ -5,6 +5,7 @@
 - [From 1.2.8 to 1.2.9](#from-128-to-129)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
+- [To 1.4.0](#to-140)
 - [To 1.3.4](#to-134)
 - [To 1.3.3](#to-133)
 - [To 1.3.2](#to-132)
@@ -50,6 +51,14 @@ composer update nowo-tech/word-to-pdf-bundle
 ```
 
 ## Unreleased
+
+## To 1.4.0
+
+From **1.3.4** — flysystem adapter wired, safe Content-Disposition, isolated soffice version check, Symfony >=7.4.
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
 
 - **Symfony 7.4+** is now required (was 7.0+); 8.x unchanged.
 - **`export.flysystem_adapter`** is now used: when a profile sets it, `toFlysystem()` writes to that service (it must exist and implement `League\Flysystem\FilesystemOperator`, otherwise the container fails to compile or `ExportException` is thrown) instead of the injected `$flysystem`.
