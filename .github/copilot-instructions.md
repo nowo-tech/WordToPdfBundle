@@ -24,3 +24,7 @@ Use this when suggesting code, tests, documentation, or CI changes for this repo
 
 - Add or update tests for new behaviour; keep **100%** PHP line coverage.
 - Integration LibreOffice tests may use `@group libreoffice` and skip when `soffice` is absent.
+
+## Commits
+
+- Never add AI co-author trailers: no `Co-authored-by: Cursor` / `cursoragent@cursor.com`, no `Co-Authored-By: Claude …` / `noreply@anthropic.com` (REQ-GIT-001).
