@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Dependencies refreshed (Composer and pnpm/npm lock files of the bundle and its demos, campaign 2026-10-19).
+- `.php-cs-fixer.dist.php`: `new ParallelConfig(2)` (REQ-CS-001).
 - Documentation: wave-1 REQ compliance — README preamble order and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, canonical issue templates, demo `.env.example` comments, SPEC-DRIVEN-DEVELOPMENT contributor workflow and relationship to Engram, doc TOCs.
 
 ## [1.5.0] - 2026-10-13
