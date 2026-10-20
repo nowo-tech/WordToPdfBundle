@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Documentation: wave-1 REQ compliance — README preamble order and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, canonical issue templates, demo `.env.example` comments, SPEC-DRIVEN-DEVELOPMENT contributor workflow and relationship to Engram, doc TOCs.
+
 ## [1.5.0] - 2026-10-13
 
 ### Changed

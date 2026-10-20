@@ -4,7 +4,6 @@
 
 > **Found this useful?** Install from Packagist (`composer require nowo-tech/word-to-pdf-bundle`) and consider starring [WordToPdfBundle on GitHub](https://github.com/nowo-tech/WordToPdfBundle).
 
-**FrankenPHP demos:** runtime is selected with **`FRANKENPHP_MODE`** (`worker` default, or `classic` for per-request PHP / hot-reload). See [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md).
 Symfony bundle that converts **Microsoft Word** (`.docx` / `.doc`) to **PDF** using **LibreOffice Writer** (`soffice` headless) for print-quality layout fidelity:
 - **named YAML profiles** + **default profile** + deep merge with per-call options, or **`convertWithInlineProfile()`**;
 - **batch conversion** via **`convertMany()`** with **`PdfNaming`** (keep / prefix / suffix / surround / fixed / callback, or path ⇒ filename map);
@@ -12,6 +11,8 @@ Symfony bundle that converts **Microsoft Word** (`.docx` / `.doc`) to **PDF** us
 - works under **PHP-FPM** and **FrankenPHP** (Symfony Process / `proc_open`);
 - Symfony-friendly export: streamed/binary responses, local path, optional **Flysystem**.
 This bundle does **not** fill Word templates (see [WordTemplateBundle](https://github.com/nowo-tech/WordTemplateBundle)), convert HTML to Word (see [HtmlToWordBundle](https://github.com/nowo-tech/HtmlToWordBundle)), or use DomPDF (DomPDF cannot preserve Word styles).
+
+**FrankenPHP demos:** runtime is selected with **`FRANKENPHP_MODE`** (`worker` default, or `classic` for per-request PHP / hot-reload). See [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md).
 
 ![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
@@ -101,7 +102,6 @@ cd demo/symfony8 && cp .env.example .env && make up   # Symfony 8, port 8022
 
 - [Installation](docs/INSTALLATION.md)
 - [Configuration](docs/CONFIGURATION.md)
-- [PSR evaluation (REQ-CS-007)](docs/PSR.md)
 - [Usage](docs/USAGE.md)
 - [Contributing](docs/CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
@@ -115,6 +115,7 @@ cd demo/symfony8 && cp .env.example .env && make up   # Symfony 8, port 8022
 
 ### Additional documentation
 
+- [PSR evaluation (REQ-CS-007)](docs/PSR.md)
 - [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [FrankenPHP / Docker demo](docs/DEMO-FRANKENPHP.md) — `demo/symfony8` (see [`demo/README.md`](demo/README.md))
 - [FrankenPHP worker audit (no kernel reset)](docs/FRANKENPHP-WORKER-AUDIT.md)

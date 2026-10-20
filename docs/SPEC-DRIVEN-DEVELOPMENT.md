@@ -16,6 +16,8 @@ There is no separate executable spec language (for example Gherkin); tests and s
 - [Configuration](#configuration)
 - [Demos and REQ anchors](#demos-and-req-anchors)
 - [Verification](#verification)
+- [Suggested workflow for contributors](#suggested-workflow-for-contributors)
+- [Relationship to Engram](#relationship-to-engram)
 
 ## GitHub Spec Kit
 
@@ -74,3 +76,15 @@ make qa
 make release-check
 composer coverage-check   # 100% PHP lines
 ```
+
+## Suggested workflow for contributors
+
+1. **Clarify behavior** in an issue or draft PR: acceptance criteria for the product and, if relevant, the Makefiles/demos (`REQ-*`).
+2. **Implement** with tests (PHPUnit) and static analysis (PHPStan); behavior changes require tests under `tests/`.
+3. **Anchor scripts and demos** when dev UX changes: add or adjust `REQ-*` comments and the table above.
+4. **Ship integrator docs** when behavior or configuration changes: [`USAGE.md`](USAGE.md), [`CONFIGURATION.md`](CONFIGURATION.md), [`CHANGELOG.md`](CHANGELOG.md), and [`UPGRADING.md`](UPGRADING.md) when consumers must change code or config.
+5. **Keep Spec Kit artifacts in sync** when files under `src/` change: update [`spec.md`](../specs/001-baseline/spec.md) and [`code-inventory.md`](../specs/001-baseline/code-inventory.md) and follow the maintainer checklist in [`SPEC-KIT.md`](SPEC-KIT.md).
+
+## Relationship to Engram
+
+[ENGRAM.md](ENGRAM.md) covers the developer's **local, cross-session memory** (MCP) and the org-wide checklist pointers. This document and `specs/` are the **committed, reviewable** source of truth for product behavior and `REQ-*` traceability. Never store product decisions only in Engram; summarize them here or in the baseline spec.

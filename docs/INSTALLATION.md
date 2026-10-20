@@ -3,10 +3,11 @@
 ## Table of contents
 
 - [Requirements](#requirements)
+  - [Install LibreOffice Writer](#install-libreoffice-writer)
 - [Composer](#composer)
 - [Optional: Flysystem](#optional-flysystem)
 - [Verify runtime](#verify-runtime)
-- [PHP runtime notes (FPM & FrankenPHP)](#php-runtime-notes-fpm-frankenphp)
+- [PHP runtime notes (FPM & FrankenPHP)](#php-runtime-notes-fpm--frankenphp)
 
 ## Requirements
 

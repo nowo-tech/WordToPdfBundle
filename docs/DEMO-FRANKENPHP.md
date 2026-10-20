@@ -10,6 +10,7 @@ The repository includes an **optional Symfony demo app** under `demo/symfony8` (
 - [PHP version and FRANKENPHP_MODE](#php-version-and-frankenphp_mode)
 - [Development vs production (FrankenPHP worker mode)](#development-vs-production-frankenphp-worker-mode)
 - [Timeouts (avoid stuck FrankenPHP workers / orphaned soffice)](#timeouts-avoid-stuck-frankenphp-workers--orphaned-soffice)
+  - [Shared `PROCESS_TIMEOUT` (all Nowo process-based bundles)](#shared-process_timeout-all-nowo-process-based-bundles)
 - [Worker mode without kernel reset](#worker-mode-without-kernel-reset)
 - [Demo page](#demo-page)
 - [LibreOffice in the image](#libreoffice-in-the-image)

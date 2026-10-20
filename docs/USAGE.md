@@ -3,7 +3,7 @@
 ## Table of contents
 
 - [Convert](#convert)
-- [Convert many (batch) + PDF naming](#convert-many-batch-pdf-naming)
+- [Convert many (batch) + PDF naming](#convert-many-batch--pdf-naming)
 - [Export responses](#export-responses)
 - [Runtime check](#runtime-check)
 - [Fidelity notes](#fidelity-notes)

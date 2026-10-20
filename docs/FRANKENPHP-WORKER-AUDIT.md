@@ -10,6 +10,18 @@
 | Remediation (2026-10-01) | `$checked` marked `#[WorkerSafe]` so Igor IncompleteReset is silent while the probe remains once-per-worker |
 | **Verdict** | ✅ **Viable under scenario B** (and A) — no request-scoped state leaks; LibreOffice runs as an isolated child process with explicit timeouts |
 
+## Table of contents
+
+- [Execution model assumed](#execution-model-assumed)
+- [Summary](#summary)
+- [Services reviewed](#services-reviewed)
+- [Findings](#findings)
+  - [W-01 — LibreOffice conversions pin a worker thread (Low)](#w-01--libreoffice-conversions-pin-a-worker-thread-low)
+  - [W-02 — Temporary PDFs require caller dispose (Low)](#w-02--temporary-pdfs-require-caller-dispose-low)
+  - [W-03 — Boot check once per worker (Info, by design)](#w-03--boot-check-once-per-worker-info-by-design)
+- [Usage recommendations](#usage-recommendations)
+- [Re-audit triggers](#re-audit-triggers)
+
 ## Execution model assumed
 
 FrankenPHP worker mode boots the Symfony kernel once per worker and serves many requests with the same container. This audit assumes the **strict** variant: **`FRANKENPHP_RESET_KERNEL` unset/false** — the kernel is **not** rebooted between requests. Two scenarios:

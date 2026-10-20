@@ -1,5 +1,12 @@
 # Engram — WordToPdfBundle
 
+## Table of contents
+
+- [Purpose](#purpose)
+- [Non-goals](#non-goals)
+- [Runtime](#runtime)
+- [Key types](#key-types)
+
 ## Purpose
 
 High-fidelity Word (`.docx`/`.doc`) → PDF via LibreOffice Writer (`soffice`), with named profiles and mandatory runtime dependency checks.
@@ -23,3 +30,5 @@ High-fidelity Word (`.docx`/`.doc`) → PDF via LibreOffice Writer (`soffice`), 
 - `RuntimeRequirementsChecker` / `LibreOfficeProcessRunner`
 - `ConvertedPdf` / `PdfExporter`
 - `MissingDependencyException` when Writer is missing
+
+Repository-local **product spec** and **`REQ-*`** traceability (Makefiles, demos) are described in [Spec-driven development](SPEC-DRIVEN-DEVELOPMENT.md); Engram does not replace it.
