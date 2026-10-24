@@ -90,7 +90,7 @@ final readonly class PdfExporter implements ExporterInterface
         $filename = $pdf->suggestedFilename();
         $response = new BinaryFileResponse($pdf->path());
         $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Disposition', self::contentDisposition($filename));
+        $response->headers->set('Content-Disposition', $this->contentDisposition($filename));
         if ($pdf->isTemporary()) {
             $response->deleteFileAfterSend(true);
         }
@@ -160,7 +160,7 @@ final readonly class PdfExporter implements ExporterInterface
     {
         return [
             'Content-Type'        => 'application/pdf',
-            'Content-Disposition' => self::contentDisposition($filename),
+            'Content-Disposition' => $this->contentDisposition($filename),
         ];
     }
 
@@ -168,7 +168,7 @@ final readonly class PdfExporter implements ExporterInterface
      * RFC 6266 attachment header (quoted ASCII fallback + filename* UTF-8) via {@see HeaderUtils::makeDisposition()},
      * so quotes, CR/LF, path separators or non-ASCII characters in export.filename cannot break or inject headers.
      */
-    private static function contentDisposition(string $filename): string
+    private function contentDisposition(string $filename): string
     {
         $filename = trim((string) preg_replace('/[\x00-\x1F\x7F\/\\\\]+/u', '_', $filename));
         if (trim($filename, ' _.') === '') {

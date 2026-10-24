@@ -29,8 +29,6 @@ final readonly class ConvertedPdf
 
     /**
      * Flysystem service id configured on the conversion profile ({@code export.flysystem_adapter}), if any.
-     *
-     * @return string|null
      */
     public function flysystemAdapter(): ?string
     {

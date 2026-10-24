@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `not child.rendered` + `form_row(child)`) instead of `form_row(form.documents)` / `form_row(form.convert)`, per
   REQ-TWIG-003.
 - Documentation: wave-1 REQ compliance — README preamble order and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, canonical issue templates, demo `.env.example` comments, SPEC-DRIVEN-DEVELOPMENT contributor workflow and relationship to Engram, doc TOCs.
+- Internal: applied the pending Rector suggestions (private static helper in `PdfExporter` made non-static, redundant `@return` docblock dropped in `ConvertedPdf`); no behaviour change. `make rector-dry` is clean again.
 
 ## [1.5.0] - 2026-10-13
 
