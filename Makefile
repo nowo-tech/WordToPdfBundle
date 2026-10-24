@@ -1,5 +1,5 @@
 # WordToPdfBundle — Docker-driven development (REQ-MAKE-001 / REQ-MAKE-002)
-.PHONY: help up down build shell ensure-up install test test-coverage coverage-check cs-check cs-fix qa clean composer-sync release-check release-check-demos demo-smoke phpstan igor rector rector-dry update validate setup-hooks check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history assets update-deps
+.PHONY: help up down build shell ensure-up install test test-coverage coverage-check cs-check cs-fix qa clean composer-sync release-check release-check-demos demo-smoke phpstan igor rector rector-dry update validate setup-hooks check-no-cursor-coauthor check-open-prs check-no-raw-html-form strip-cursor-coauthor-from-history assets update-deps
 
 COMPOSE_FILE ?= docker-compose.yml
 # Prefer Compose V2; absolute docker path avoids shadowing by local docker/ (REQ-MAKE-010).
@@ -95,14 +95,17 @@ assets:
 # Run Igor worker-state audit (REQ-CS-008)
 igor: ensure-up
 	$(COMPOSE) exec -T php composer igor
-release-check: check-no-cursor-coauthor ensure-up
+release-check:
+	@$(MAKE) ensure-up
 	@$(MAKE) check-no-cursor-coauthor
 	@$(MAKE) check-open-prs
+	@$(MAKE) check-no-raw-html-form
 	@$(MAKE) composer-sync
 	@$(MAKE) cs-fix
 	@$(MAKE) cs-check
 	@$(MAKE) rector-dry
 	@$(MAKE) phpstan
+	@$(MAKE) igor
 	@$(MAKE) test-coverage
 ifneq ($(DEMO_PRESENT),)
 	@$(MAKE) release-check-demos
@@ -110,6 +113,10 @@ endif
 
 release-check-demos:
 	@$(MAKE) -C demo release-check
+
+# REQ-TWIG-005: no raw <form>/<input>/<textarea>/<select> in bundle or demo Twig
+check-no-raw-html-form:
+	@bash .scripts/check-no-raw-html-form.sh
 
 # REQ-TEST-011
 demo-smoke:
