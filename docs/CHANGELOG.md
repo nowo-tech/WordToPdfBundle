@@ -36,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Dependencies refreshed (Composer and pnpm/npm lock files of the bundle and its demos, campaign 2026-10-19).
 - `.php-cs-fixer.dist.php`: `new ParallelConfig(2)` (REQ-CS-001).
+- Demo: `demo/index.html.twig` renders the upload form through the child loop (`{% for child in form %}` +
+  `not child.rendered` + `form_row(child)`) instead of `form_row(form.documents)` / `form_row(form.convert)`, per
+  REQ-TWIG-003.
 - Documentation: wave-1 REQ compliance — README preamble order and documentation list order, CONTRIBUTING Cursor Agent settings and post-release-commit trailer check, canonical issue templates, demo `.env.example` comments, SPEC-DRIVEN-DEVELOPMENT contributor workflow and relationship to Engram, doc TOCs.
 
 ## [1.5.0] - 2026-10-13
