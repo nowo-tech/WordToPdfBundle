@@ -7,6 +7,7 @@
   - [Breaking changes](#breaking-changes)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
+- [To 1.5.1](#to-151)
 - [To 1.5.0](#to-150)
 - [To 1.4.0](#to-140)
 - [To 1.3.4](#to-134)
@@ -72,6 +73,14 @@ composer update nowo-tech/word-to-pdf-bundle
 ```
 
 ## Unreleased
+
+## To 1.5.1
+
+From **1.5.0**:
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
 
 ## To 1.5.0
 
