@@ -108,3 +108,4 @@ Before each tagged release, maintainers confirm (tick in the release PR or tag n
 | Permissions / exposure of generated PDF/temp files acceptable | ☐ |
 | Resource limits (`timeout`, `max_source_bytes`) considered | ☐ |
 | LibreOffice Writer present on deploy targets; `nowo:word-to-pdf:check` documented | ☐ |
+| AI security audit (REQ-SEC-004) current: **Pass (good)** / **Low** (re-audit 2026-09-28; recorded in the Nowo monorepo `BUNDLES_SECURITY_ANALYSIS.md`) | ☐ |
