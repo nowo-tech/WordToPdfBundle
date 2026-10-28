@@ -15,6 +15,8 @@ use Symfony\Component\Process\Process;
 use Throwable;
 
 use function basename;
+use function bin2hex;
+use function chmod;
 use function copy;
 use function escapeshellarg;
 use function file_exists;
@@ -25,6 +27,7 @@ use function mkdir;
 use function pathinfo;
 use function preg_match;
 use function preg_replace;
+use function random_bytes;
 use function sprintf;
 use function str_contains;
 use function sys_get_temp_dir;
@@ -132,13 +135,15 @@ class LibreOfficeProcessRunner
             throw new ConversionFailedException(sprintf('LibreOffice did not produce the expected PDF at "%s". Output: %s', $expectedPdf, trim($process->getOutput() . "\n" . $process->getErrorOutput())));
         }
 
-        $finalPath = $baseTemp . DIRECTORY_SEPARATOR . 'word_to_pdf_result_' . uniqid('', true) . '.pdf';
+        // Random (not time-based) name in the shared temp dir, owner-only below: converted documents may hold personal data.
+        $finalPath = $baseTemp . DIRECTORY_SEPARATOR . 'word_to_pdf_result_' . bin2hex(random_bytes(16)) . '.pdf';
         // @codeCoverageIgnoreStart
         if (!@rename($expectedPdf, $finalPath) && !@copy($expectedPdf, $finalPath)) {
             $this->cleanupDir($workDir);
             throw new ConversionFailedException('Could not move generated PDF to a stable temporary path.');
         }
         // @codeCoverageIgnoreEnd
+        chmod($finalPath, 0o600);
 
         $this->cleanupDir($workDir);
 

@@ -32,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Security
+
+- **Converted PDF is owner-only.** The result PDF was moved to the shared temp dir under a time-based name with
+  LibreOffice's default permissions (usually world-readable): other local users could read converted documents until
+  `dispose()`. It gets a random name and mode `0600` now.
+
 ### Changed
 
 - Docs: USAGE states that host and demo forms are Symfony Form Types rendered with `form_start` / the `not child.rendered` child loop / `form_end`, and that raw `<form>` / `<input>` must not be reintroduced; `check-no-raw-html-form` enforces it in `release-check` (REQ-TWIG-005 rule 9).
