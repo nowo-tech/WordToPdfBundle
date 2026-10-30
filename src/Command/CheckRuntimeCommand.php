@@ -15,6 +15,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function is_string;
 
+/**
+ * Console command `nowo:word-to-pdf:check`: reports whether LibreOffice Writer is installed and ready.
+ */
 #[AsCommand(
     name: 'nowo:word-to-pdf:check',
     description: 'Check that LibreOffice Writer (libreoffice-writer / soffice) is installed and ready for Word → PDF conversion.',

@@ -170,19 +170,15 @@ class RuntimeRequirementsChecker implements ResetInterface
         }
 
         $output = trim($process->getOutput() . "\n" . $process->getErrorOutput());
-        // @codeCoverageIgnoreStart
         if ($output === '') {
             return null;
         }
-        // @codeCoverageIgnoreEnd
 
         if (preg_match('/(\d+\.\d+(?:\.\d+)?)/', $output, $m) === 1) {
             return $this->versions[$binary] = $m[1];
         }
 
-        // @codeCoverageIgnoreStart
         return null;
-        // @codeCoverageIgnoreEnd
     }
 
     private function removeDir(string $dir): void

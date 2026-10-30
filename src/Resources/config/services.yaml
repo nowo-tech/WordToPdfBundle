@@ -6,7 +6,10 @@ services:
         autoconfigure: true
 
     Nowo\WordToPdfBundle\Runtime\LibreOfficeBinaryLocator: ~
-    Nowo\WordToPdfBundle\Runtime\LibreOfficeProcessRunner: ~
+    # REQ-OBS-001: logs conversion start/success/timeout/failure without paths or document contents.
+    Nowo\WordToPdfBundle\Runtime\LibreOfficeProcessRunner:
+        arguments:
+            $logger: '@?logger'
     Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker: ~
 
     Nowo\WordToPdfBundle\Config\ProfileResolver:

@@ -8,6 +8,9 @@ use RuntimeException;
 
 use function sprintf;
 
+/**
+ * Thrown when LibreOffice Writer is missing, not executable or older than the required minimum version.
+ */
 final class MissingDependencyException extends RuntimeException implements WordToPdfExceptionInterface
 {
     /**

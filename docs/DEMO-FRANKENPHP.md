@@ -117,6 +117,10 @@ Regenerate the stress DOCX when needed (requires `python-docx` + Pillow):
 python3 demo/symfony8/bin/generate-stress-docx.py
 ```
 
+The generator is covered by pytest (`tests_python/`, gate 90% lines in `pytest.ini`): run `make test-python` from the
+bundle root (throwaway `python:3.13-slim` container; it writes only to a temp dir, never to the shipped fixture). CI
+runs the same tests in the `python-tests` job and `make release-check` includes them (REQ-TEST-004).
+
 Dev stack includes Web Profiler and **Nowo Twig Inspector**.
 
 ## LibreOffice in the image

@@ -29,6 +29,7 @@
     "require": {
         "php": ">=8.2 <8.6",
         "ext-fileinfo": "*",
+        "psr/log": "^1.1 || ^2.0 || ^3.0",
         "symfony/config": "^7.4 || ^8.0",
         "symfony/console": "^7.4 || ^8.0",
         "symfony/dependency-injection": "^7.4 || ^8.0",
@@ -79,13 +80,15 @@
     "archive": {
         "exclude": [
             "/demo",
-            "/.cursor"
+            "/.cursor",
+            "/tests_python",
+            "/pytest.ini"
         ]
     },
     "scripts": {
         "test": "@php vendor/bin/phpunit --colors=always",
-        "test-coverage": "@php -d pcov.enabled=1 vendor/bin/phpunit --colors=always --coverage-text --coverage-clover=coverage.xml | tee coverage-php.txt && sh .scripts/php-coverage-percent.sh coverage-php.txt",
-        "coverage-check": "@php -d pcov.enabled=1 vendor/bin/phpunit --colors=always --coverage-text=coverage-output.txt --coverage-clover=coverage.xml && sh .scripts/coverage-fail-under.sh coverage-output.txt 100",
+        "test-coverage": "@php -d pcov.enabled=1 vendor/bin/phpunit --colors=always --coverage-text --coverage-clover=coverage.xml --coverage-html=coverage | tee coverage-php.txt && sh .scripts/php-coverage-percent.sh coverage-php.txt",
+        "coverage-check": "@php -d pcov.enabled=1 vendor/bin/phpunit --colors=always --coverage-text=coverage-output.txt --coverage-clover=coverage.xml --coverage-html=coverage && sh .scripts/coverage-fail-under.sh coverage-output.txt 100",
         "test-coverage-100": "@coverage-check",
         "cs-check": "@php vendor/bin/php-cs-fixer fix --dry-run --diff",
         "cs-fix": "@php vendor/bin/php-cs-fixer fix",

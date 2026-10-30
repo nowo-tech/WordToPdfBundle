@@ -33,6 +33,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **PSR-3 logging in `LibreOfficeProcessRunner`** (REQ-OBS-001): conversion start/success (`info`), timeout (`warning`),
+  LibreOffice failure / missing PDF / workspace errors (`error`, with exit code and a `reason`), and orphan `soffice`
+  reaping (`info`). The context holds only sizes, durations, exit codes, the filter and the timeout — never document
+  contents, file names, paths or LibreOffice output. The runner takes an optional `?LoggerInterface $logger`
+  (wired to `@?logger`). See [SECURITY.md](SECURITY.md#logging-and-secrets).
+- `psr/log` is now an explicit requirement (it was already installed through `symfony/http-kernel`).
+- Python tests for the demo fixture generator `demo/symfony8/bin/generate-stress-docx.py` (`tests_python/`, pytest +
+  pytest-cov, gate 90% lines): `make test-python`, CI job `python-tests`, part of `make release-check` (REQ-TEST-004).
+- [docs/COVERAGE.md](COVERAGE.md) lists every remaining `@codeCoverageIgnore` branch with its reason (REQ-TEST-003).
+
+### Changed
+
+- `RuntimeBootCheckListener` (`check_on_boot` + `boot_failure: warning`) logs a fixed message with structured context
+  instead of the exception message, which could echo the configured binary path (REQ-OBS-001).
+- Coverage: five `@codeCoverageIgnore` blocks replaced by tests (`safeBasename()` fallback, `cleanupDir()` file branch,
+  unsafe-path skip of the orphan reaper, both `null` returns of the LibreOffice version probe); 15 justified blocks
+  remain, documented in COVERAGE.md. PHP line coverage stays 100%.
+- Root `docker-compose.yml` mounts the `coverage-data` volume at `/app/coverage`, where `composer test-coverage` /
+  `coverage-check` now write the HTML report (`--coverage-html=coverage`); it was mounted at an unused
+  `/app/var/coverage` (REQ-DOC-001).
+- Class-level PHPDoc on `CheckRuntimeCommand` and every exception type (REQ-CS-001).
+
 ## [1.5.1] - 2026-10-28
 
 WordToPdf: the converted PDF gets a random name and mode 0600 in the shared temp dir. See [UPGRADING](UPGRADING.md#to-151).

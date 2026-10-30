@@ -7,6 +7,8 @@ namespace Nowo\WordToPdfBundle\Runtime;
 use FilesystemIterator;
 use Nowo\WordToPdfBundle\Config\ResolvedConfig;
 use Nowo\WordToPdfBundle\Exception\ConversionFailedException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -20,7 +22,9 @@ use function chmod;
 use function copy;
 use function escapeshellarg;
 use function file_exists;
+use function filesize;
 use function function_exists;
+use function hrtime;
 use function is_dir;
 use function is_file;
 use function mkdir;
@@ -30,11 +34,13 @@ use function preg_replace;
 use function random_bytes;
 use function sprintf;
 use function str_contains;
+use function strtolower;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
 
 use const DIRECTORY_SEPARATOR;
+use const PATHINFO_EXTENSION;
 use const PATHINFO_FILENAME;
 
 /**
@@ -43,9 +49,24 @@ use const PATHINFO_FILENAME;
  * Compatible with PHP-FPM and FrankenPHP (Symfony Process / proc_open).
  * Always applies {@see ResolvedConfig::$timeout} and force-stops the process tree on
  * timeout/failure so FrankenPHP workers are not left with orphaned `soffice` children.
+ *
+ * Logs start/success/timeout/failure/orphan reaping through PSR-3 (REQ-OBS-001). Log context
+ * never contains document contents, file names or paths (source, workspace, PDF), nor the
+ * LibreOffice stdout/stderr (which can echo paths): only sizes, durations, exit codes,
+ * the export filter and the configured timeout.
  */
 class LibreOfficeProcessRunner
 {
+    private readonly LoggerInterface $logger;
+
+    /**
+     * @param LoggerInterface|null $logger Optional PSR-3 logger (NullLogger when absent)
+     */
+    public function __construct(?LoggerInterface $logger = null)
+    {
+        $this->logger = $logger ?? new NullLogger();
+    }
+
     /**
      * Run LibreOffice headless conversion and return the absolute PDF path.
      *
@@ -62,10 +83,22 @@ class LibreOfficeProcessRunner
      */
     public function convert(string $sourcePath, string $binary, ResolvedConfig $config): string
     {
+        $startedAt = hrtime(true);
+        $context   = [
+            'bundle'           => 'word_to_pdf',
+            'action'           => 'convert',
+            'filter'           => $config->filter,
+            'timeout_seconds'  => $config->timeout,
+            'source_extension' => strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION)),
+            'source_bytes'     => @filesize($sourcePath) ?: 0,
+        ];
+        $this->logger->info('Word to PDF conversion started.', $context);
+
         $baseTemp = $config->tempDir ?? sys_get_temp_dir();
         $workDir  = $baseTemp . DIRECTORY_SEPARATOR . 'word_to_pdf_' . uniqid('', true);
         // @codeCoverageIgnoreStart
         if (!@mkdir($workDir, 0700, true) && !is_dir($workDir)) {
+            $this->logger->error('Word to PDF conversion failed: could not create the conversion workspace.', $context + ['reason' => 'workspace']);
             throw new ConversionFailedException(sprintf('Could not create conversion workspace "%s".', $workDir));
         }
         // @codeCoverageIgnoreEnd
@@ -74,6 +107,7 @@ class LibreOfficeProcessRunner
         // @codeCoverageIgnoreStart
         if (!@mkdir($userProfile, 0700, true) && !is_dir($userProfile)) {
             $this->cleanupDir($workDir);
+            $this->logger->error('Word to PDF conversion failed: could not create the LibreOffice user profile.', $context + ['reason' => 'user_profile']);
             throw new ConversionFailedException(sprintf('Could not create LibreOffice user profile "%s".', $userProfile));
         }
         // @codeCoverageIgnoreEnd
@@ -83,6 +117,7 @@ class LibreOfficeProcessRunner
         // @codeCoverageIgnoreStart
         if (!@copy($sourcePath, $inputPath)) {
             $this->cleanupDir($workDir);
+            $this->logger->error('Word to PDF conversion failed: could not copy the source into the workspace.', $context + ['reason' => 'copy_source']);
             throw new ConversionFailedException(sprintf('Could not copy source file into workspace from "%s".', $sourcePath));
         }
         // @codeCoverageIgnoreEnd
@@ -91,6 +126,7 @@ class LibreOfficeProcessRunner
         // @codeCoverageIgnoreStart
         if (!@mkdir($outDir, 0700, true) && !is_dir($outDir)) {
             $this->cleanupDir($workDir);
+            $this->logger->error('Word to PDF conversion failed: could not create the output directory.', $context + ['reason' => 'output_dir']);
             throw new ConversionFailedException(sprintf('Could not create output directory "%s".', $outDir));
         }
         // @codeCoverageIgnoreEnd
@@ -121,10 +157,19 @@ class LibreOfficeProcessRunner
         } catch (ProcessTimedOutException $e) {
             $this->forceStopProcess($process, $userProfile);
             $this->cleanupDir($workDir);
+            $this->logger->warning('Word to PDF conversion timed out; LibreOffice was force-stopped.', $context + [
+                'reason'      => 'timeout',
+                'duration_ms' => $this->elapsedMs($startedAt),
+            ]);
             throw new ConversionFailedException(sprintf('LibreOffice conversion timed out after %d seconds.', $config->timeout), 0, $e);
         } catch (ProcessFailedException $e) {
             $this->forceStopProcess($process, $userProfile);
             $this->cleanupDir($workDir);
+            $this->logger->error('Word to PDF conversion failed: LibreOffice exited with an error.', $context + [
+                'reason'      => 'process_failed',
+                'exit_code'   => $process->getExitCode(),
+                'duration_ms' => $this->elapsedMs($startedAt),
+            ]);
             throw new ConversionFailedException(sprintf('LibreOffice conversion failed: %s', trim($process->getErrorOutput() !== '' ? $process->getErrorOutput() : $process->getOutput())), 0, $e);
         }
 
@@ -132,6 +177,11 @@ class LibreOfficeProcessRunner
         if (!is_file($expectedPdf)) {
             $this->forceStopProcess($process, $userProfile);
             $this->cleanupDir($workDir);
+            $this->logger->error('Word to PDF conversion failed: LibreOffice did not produce a PDF.', $context + [
+                'reason'      => 'no_output',
+                'exit_code'   => $process->getExitCode(),
+                'duration_ms' => $this->elapsedMs($startedAt),
+            ]);
             throw new ConversionFailedException(sprintf('LibreOffice did not produce the expected PDF at "%s". Output: %s', $expectedPdf, trim($process->getOutput() . "\n" . $process->getErrorOutput())));
         }
 
@@ -140,12 +190,17 @@ class LibreOfficeProcessRunner
         // @codeCoverageIgnoreStart
         if (!@rename($expectedPdf, $finalPath) && !@copy($expectedPdf, $finalPath)) {
             $this->cleanupDir($workDir);
+            $this->logger->error('Word to PDF conversion failed: could not move the generated PDF.', $context + ['reason' => 'move_output']);
             throw new ConversionFailedException('Could not move generated PDF to a stable temporary path.');
         }
         // @codeCoverageIgnoreEnd
         chmod($finalPath, 0o600);
 
         $this->cleanupDir($workDir);
+        $this->logger->info('Word to PDF conversion succeeded.', $context + [
+            'pdf_bytes'   => @filesize($finalPath) ?: 0,
+            'duration_ms' => $this->elapsedMs($startedAt),
+        ]);
 
         return $finalPath;
     }
@@ -184,9 +239,7 @@ class LibreOfficeProcessRunner
 
         // Reject unexpected characters before interpolating into a shell pattern.
         if (preg_match('#^[A-Za-z0-9_./:-]+$#', $userProfile) !== 1) {
-            // @codeCoverageIgnoreStart
             return;
-            // @codeCoverageIgnoreEnd
         }
 
         if (!function_exists('exec')) {
@@ -197,7 +250,21 @@ class LibreOfficeProcessRunner
 
         $pattern = 'UserInstallation=file://' . $userProfile;
         // pkill may be absent on minimal images; ignore failures.
-        @exec('pkill -9 -f ' . escapeshellarg($pattern) . ' 2>/dev/null');
+        $output   = [];
+        $exitCode = -1;
+        @exec('pkill -9 -f ' . escapeshellarg($pattern) . ' 2>/dev/null', $output, $exitCode);
+        // pkill: 0 = at least one orphan killed, 1 = none matched, other = pkill missing/failed.
+        $this->logger->info('Word to PDF orphan reaping finished.', [
+            'bundle'        => 'word_to_pdf',
+            'action'        => 'reap_orphans',
+            'orphans_found' => $exitCode === 0,
+            'pkill_status'  => $exitCode,
+        ]);
+    }
+
+    private function elapsedMs(int|float $startedAt): int
+    {
+        return (int) ((hrtime(true) - $startedAt) / 1_000_000);
     }
 
     private function safeBasename(string $path): string
@@ -205,9 +272,7 @@ class LibreOfficeProcessRunner
         $base = basename($path);
         $safe = preg_replace('/[^A-Za-z0-9._-]/', '_', $base) ?? 'document.docx';
 
-        // @codeCoverageIgnoreStart
         return $safe !== '' ? $safe : 'document.docx';
-        // @codeCoverageIgnoreEnd
     }
 
     private function cleanupDir(string $dir): void
@@ -226,12 +291,8 @@ class LibreOfficeProcessRunner
         foreach ($iterator as $item) {
             if ($item->isDir()) {
                 @rmdir($item->getPathname());
-            } else {
-                // @codeCoverageIgnoreStart
-                if (file_exists($item->getPathname())) {
-                    @unlink($item->getPathname());
-                }
-                // @codeCoverageIgnoreEnd
+            } elseif (file_exists($item->getPathname())) {
+                @unlink($item->getPathname());
             }
         }
 

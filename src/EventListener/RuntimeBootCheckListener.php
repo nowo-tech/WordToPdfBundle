@@ -88,7 +88,12 @@ final class RuntimeBootCheckListener implements EventSubscriberInterface, ResetI
             $this->requirementsChecker->assertReady($this->profileResolver->resolveDefault());
         } catch (MissingDependencyException $e) {
             if ($this->bootFailure === 'warning') {
-                $this->logger->warning($e->getMessage());
+                $this->logger->warning('Word to PDF boot check failed: LibreOffice Writer is not ready.', [
+                    'bundle' => 'word_to_pdf',
+                    'action' => 'boot_check',
+                    // Not the exception message: it can echo the configured binary path (REQ-OBS-001).
+                    'hint' => 'Run "php bin/console nowo:word-to-pdf:check" for details.',
+                ]);
 
                 return;
             }
