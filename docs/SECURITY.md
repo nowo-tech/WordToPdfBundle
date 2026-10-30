@@ -74,6 +74,23 @@ It does **not** expose HTTP routes by itself; the host application controls auth
 
 Do not log full document contents or temp paths that reveal customer data. Avoid logging credentials if Flysystem adapters are configured.
 
+What the bundle itself logs (REQ-OBS-001), through the optional `logger` service (PSR-3, NullLogger when absent):
+
+| Event | Level | Context |
+|-------|-------|---------|
+| Conversion started / succeeded | `info` | `bundle`, `action`, `filter`, `timeout_seconds`, `source_extension`, `source_bytes`; on success also `pdf_bytes`, `duration_ms` |
+| LibreOffice timed out (process force-stopped) | `warning` | the above + `reason: timeout`, `duration_ms` |
+| LibreOffice exited non-zero / produced no PDF | `error` | the above + `reason` (`process_failed` / `no_output`), `exit_code`, `duration_ms` |
+| Workspace / output file operations failed | `error` | the above + `reason` (`workspace`, `user_profile`, `copy_source`, `output_dir`, `move_output`) |
+| Orphan `soffice` reaping after a timeout/failure | `info` | `orphans_found`, `pkill_status` |
+| `check_on_boot` with `boot_failure: warning` | `warning` | `action: boot_check`, `hint` (run `nowo:word-to-pdf:check`) |
+
+Never logged: document contents, file names, any path (source, workspace, LibreOffice profile, result PDF, binary),
+LibreOffice stdout/stderr (it can echo paths) and exception messages. Exceptions thrown to the host still carry
+diagnostic messages that may include paths — do not show them to end users, and redact them if your application logs
+them. `tests/Unit/Runtime/LibreOfficeProcessRunnerLoggingTest.php` asserts that no path, file name or content reaches
+the logs.
+
 ## Cryptography
 
 Not applicable; no custom cryptography in this bundle.

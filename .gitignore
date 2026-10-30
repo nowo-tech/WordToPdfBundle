@@ -18,3 +18,8 @@
 .cursor/sandbox.json
 
 /var/
+
+# Python test artefacts (make test-python, REQ-TEST-004)
+__pycache__/
+.pytest_cache/
+.coverage

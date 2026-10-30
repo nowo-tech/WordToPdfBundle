@@ -74,6 +74,17 @@ composer update nowo-tech/word-to-pdf-bundle
 
 ## Unreleased
 
+No action required.
+
+- The bundle now logs conversion events through the `logger` service (PSR-3) when one exists — `info` on every
+  conversion start/success, `warning` on timeouts, `error` on LibreOffice failures. Route or silence them with a
+  Monolog handler/level if `info` is too verbose for your app. Contexts never include paths or document contents.
+- With `check_on_boot: true` and `boot_failure: warning`, the warning message is now the fixed text
+  `Word to PDF boot check failed: LibreOffice Writer is not ready.` (structured context) instead of the
+  `MissingDependencyException` message; run `php bin/console nowo:word-to-pdf:check` for the details.
+- If you extend `LibreOfficeProcessRunner` and override its constructor, it now accepts an optional
+  `?LoggerInterface $logger` argument.
+
 ## To 1.5.1
 
 From **1.5.0**:

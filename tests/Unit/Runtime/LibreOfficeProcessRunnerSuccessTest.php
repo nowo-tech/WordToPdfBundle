@@ -110,6 +110,21 @@ final class LibreOfficeProcessRunnerSuccessTest extends TestCase
         $checker->assertReady($config);
     }
 
+    public function testVersionUnreadableWhenOutputIsEmpty(): void
+    {
+        $fake = dirname(__DIR__, 2) . '/Fixtures/fake-soffice-emptyver.sh';
+        chmod($fake, 0755);
+        $checker = new RuntimeRequirementsChecker(new LibreOfficeBinaryLocator());
+        $config  = ResolvedConfig::fromArray([
+            'binary_path' => $fake,
+            'temp_dir'    => sys_get_temp_dir(),
+            'min_version' => '1.0',
+        ]);
+        $this->expectException(MissingDependencyException::class);
+        $this->expectExceptionMessage('Could not read LibreOffice version');
+        $checker->assertReady($config);
+    }
+
     public function testVersionProcessFailure(): void
     {
         $fake = dirname(__DIR__, 2) . '/Fixtures/fake-soffice-failver.sh';

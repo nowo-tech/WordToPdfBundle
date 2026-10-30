@@ -1,5 +1,5 @@
 # WordToPdfBundle — Docker-driven development (REQ-MAKE-001 / REQ-MAKE-002)
-.PHONY: help up down build shell ensure-up install test test-coverage coverage-check cs-check cs-fix qa clean composer-sync release-check release-check-demos demo-smoke phpstan igor rector rector-dry update validate setup-hooks check-no-cursor-coauthor check-open-prs check-no-raw-html-form strip-cursor-coauthor-from-history assets update-deps
+.PHONY: help up down build shell ensure-up install test test-coverage coverage-check cs-check cs-fix qa clean composer-sync release-check release-check-demos demo-smoke phpstan igor rector rector-dry update validate setup-hooks check-no-cursor-coauthor check-open-prs check-no-raw-html-form strip-cursor-coauthor-from-history assets update-deps test-python
 
 COMPOSE_FILE ?= docker-compose.yml
 # Prefer Compose V2; absolute docker path avoids shadowing by local docker/ (REQ-MAKE-010).
@@ -13,6 +13,8 @@ COMPOSE     ?= $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP  ?= php
 COMPOSER_INSTALL = $(COMPOSE) exec -T $(SERVICE_PHP) sh -c 'composer install --no-interaction || { rm -rf vendor; composer clear-cache; composer install --no-interaction; }'
 DEMO_PRESENT := $(wildcard demo)
+PYTHON_TESTS_PRESENT := $(wildcard tests_python)
+PYTHON_IMAGE ?= python:3.13-slim
 
 help:
 	@echo "WordToPdfBundle — development commands"
@@ -20,6 +22,7 @@ help:
 	@echo "  Container: up, down, build, shell, ensure-up"
 	@echo "  Dependencies: install, update, update-deps, composer-sync, validate"
 	@echo "  Tests: test, test-coverage, coverage-check"
+	@echo "  test-python     pytest + coverage gate (90%) for the demo fixture generator (REQ-TEST-004)"
 	@echo "  Quality: cs-check, cs-fix, rector, rector-dry, phpstan, qa"
 	@echo "  Release: release-check, release-check-demos, check-open-prs"
 	@echo "  demo-smoke      REQ-TEST-011: boot demo and assert HTTP 200"
@@ -107,12 +110,22 @@ release-check:
 	@$(MAKE) phpstan
 	@$(MAKE) igor
 	@$(MAKE) test-coverage
+ifneq ($(PYTHON_TESTS_PRESENT),)
+	@$(MAKE) test-python
+endif
 ifneq ($(DEMO_PRESENT),)
 	@$(MAKE) release-check-demos
 endif
 
 release-check-demos:
 	@$(MAKE) -C demo release-check
+
+# REQ-TEST-004: pytest for demo/symfony8/bin/generate-stress-docx.py in a throwaway Python container
+# (repo mounted read-only; no cache/bytecode/.coverage written to the checkout). Gate in pytest.ini.
+test-python:
+	$(or $(DOCKER_BIN),docker) run --rm -v "$(CURDIR)":/app:ro -w /app \
+		-e PYTHONDONTWRITEBYTECODE=1 -e COVERAGE_FILE=/tmp/.coverage \
+		$(PYTHON_IMAGE) sh -c 'pip install --quiet --disable-pip-version-check --root-user-action=ignore -r tests_python/requirements.txt && python -m pytest -p no:cacheprovider'
 
 # REQ-TWIG-005: no raw <form>/<input>/<textarea>/<select> in bundle or demo Twig
 check-no-raw-html-form:

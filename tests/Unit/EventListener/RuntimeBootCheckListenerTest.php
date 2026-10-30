@@ -37,7 +37,15 @@ final class RuntimeBootCheckListenerTest extends TestCase
             ->willThrowException(MissingDependencyException::libreOfficeWriterNotFound());
 
         $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(self::once())->method('warning');
+        $logger->expects(self::once())->method('warning')->with(
+            self::stringContains('boot check failed'),
+            self::callback(static function (array $context): bool {
+                self::assertSame('boot_check', $context['action']);
+                self::assertArrayNotHasKey('error', $context);
+
+                return true;
+            }),
+        );
 
         $listener = new RuntimeBootCheckListener(
             true,

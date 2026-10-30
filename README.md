@@ -127,9 +127,13 @@ cd demo/symfony8 && cp .env.example .env && make up   # Symfony 8, port 8022
 | **PHPUnit** | `composer test` — unit + integration (`@group libreoffice` skipped when `soffice` is absent). |
 | **PHP lines** | `composer coverage-check` enforces **100%** (PCOV). Latest measurement: **PHP: 100%**. |
 | **TS/JS** | N/A (no frontend assets in this bundle). |
+| **Python** | `make test-python` — pytest for the demo fixture generator `demo/symfony8/bin/generate-stress-docx.py`, gate **90%** lines (`pytest.ini`). Latest measurement: **Python: 99.54%**. |
+
+Excluded PHP branches (`@codeCoverageIgnore`) are listed one by one, with the reason, in [docs/COVERAGE.md](docs/COVERAGE.md).
 
 ```bash
 composer test
 composer coverage-check
+make test-python
 ```
 
