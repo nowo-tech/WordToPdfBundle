@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Documentation
+
+- USAGE: new section "Using it from a DDD / hexagonal application" (own port on `WordToPdfConverterInterface`, HTTP exporter helpers only in controllers, replace/decorate through the aliases, known limitations).
+
 ## [1.6.0] - 2026-10-30
 
 WordToPdf: PSR-3 conversion logging (no paths or contents), coverage report volume, Python fixture tests See [UPGRADING](UPGRADING.md#to-160).
