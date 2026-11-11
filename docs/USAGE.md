@@ -6,6 +6,7 @@
 - [Convert many (batch) + PDF naming](#convert-many-batch--pdf-naming)
 - [Export responses](#export-responses)
 - [Runtime check](#runtime-check)
+- [Using it from a DDD / hexagonal application](#using-it-from-a-ddd--hexagonal-application)
 - [Fidelity notes](#fidelity-notes)
 - [Forms in host apps and demos (REQ-TWIG-005)](#forms-in-host-apps-and-demos-req-twig-005)
 
@@ -85,6 +86,58 @@ CLI:
 php bin/console nowo:word-to-pdf:check
 php bin/console nowo:word-to-pdf:check --profile=batch
 ```
+
+## Using it from a DDD / hexagonal application
+
+Word to PDF is an **infrastructure adapter** around LibreOffice. It has no Doctrine dependency, no events and no
+routes, and it never sees your entities: it takes file paths and returns a `ConvertedPdf` handle.
+
+**Standard Symfony project (default).** Inject `WordToPdfConverterInterface` and `ExporterInterface` in a controller
+and return `toStreamResponse()` / `toBinaryResponse()` (see [Export responses](#export-responses)).
+
+**DDD / hexagonal project (opt-in).** Hide the converter behind your own port (e.g. `PdfRenderer`) and depend on
+`Converter\WordToPdfConverterInterface`:
+
+```php
+final readonly class LibreOfficePdfRenderer implements PdfRenderer
+{
+    public function __construct(private WordToPdfConverterInterface $converter) {}
+
+    public function fromDocx(string $docxPath): string
+    {
+        $pdf = $this->converter->convert($docxPath);
+
+        try {
+            return $pdf->readContents();
+        } finally {
+            $pdf->dispose();
+        }
+    }
+}
+```
+
+- **Ports to type-hint:** `Converter\WordToPdfConverterInterface` (application/infrastructure side) and
+  `Export\ExporterInterface` (both public aliases); the result is the `Result\ConvertedPdf` value object
+  (`readContents()`, `path()`, `suggestedFilename()`, `dispose()`); errors implement `WordToPdfExceptionInterface`.
+- **Split the exporter by layer:** `ExporterInterface::toStreamResponse()` / `toBinaryResponse()` return Symfony HTTP
+  responses, so call them only from controllers (presentation). In application or infrastructure code use
+  `toFile()` / `toFlysystem()` or `ConvertedPdf::readContents()` / `path()`.
+- **Replace or decorate:** point an alias at your own service or decorate it
+  (`decorates: Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface`) to add logging, metrics, caching or a
+  queue in front of LibreOffice.
+- **IDs and events:** none. Name the output from your own IDs with the naming options
+  ([Convert many (batch) + PDF naming](#convert-many-batch--pdf-naming)) and dispatch your own domain event from the
+  adapter if you need one.
+- Conversion runs a LibreOffice process synchronously; in a hexagonal app run it from a Messenger handler when the
+  request should not wait.
+
+What stays standard-only: the HTTP response helpers of `ExporterInterface` (presentation layer).
+
+### Known limitations
+
+- The only engine is LibreOffice; another backend means implementing `WordToPdfConverterInterface` yourself.
+- `ExporterInterface` mixes HTTP response helpers and storage methods in one interface; keep the HTTP ones in
+  controllers.
 
 ## Fidelity notes
 
