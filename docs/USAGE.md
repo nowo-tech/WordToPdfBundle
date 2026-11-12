@@ -6,7 +6,8 @@
 - [Convert many (batch) + PDF naming](#convert-many-batch--pdf-naming)
 - [Export responses](#export-responses)
 - [Runtime check](#runtime-check)
-- [Using it from a DDD / hexagonal application](#using-it-from-a-ddd--hexagonal-application)
+- [Standard Symfony host](#standard-symfony-host)
+- [DDD / hexagonal host](#ddd--hexagonal-host)
 - [Fidelity notes](#fidelity-notes)
 - [Forms in host apps and demos (REQ-TWIG-005)](#forms-in-host-apps-and-demos-req-twig-005)
 
@@ -66,13 +67,26 @@ $pdfs = $this->converter->convertMany([
 ## Export responses
 
 ```php
-use Nowo\WordToPdfBundle\Export\ExporterInterface;
+use Nowo\WordToPdfBundle\Export\PdfWriterInterface;
+use Nowo\WordToPdfBundle\Http\PdfResponseFactory;
 
-return $exporter->toBinaryResponse($pdf);
-// $exporter->toStreamResponse($pdf);
-// $exporter->toFile($pdf, '/path/out.pdf');
-// $exporter->toFlysystem($pdf, 'contracts/out.pdf'); // requires export.flysystem_adapter on the profile (or $flysystem injection)
+// HTTP edge (controllers)
+return $responses->binaryFile($pdf); // BinaryFileResponse on a download copy deleted after sending
+return $responses->streamed($pdf);   // StreamedResponse, written while it is sent
+
+// Framework-free (services, CLI, Messenger, domain adapters)
+$bytes = $writer->toBytes($pdf);
+$writer->toStream($pdf, $stream);              // an open, writable resource; you close it
+$writer->toFile($pdf, '/path/out.pdf');
+$writer->toFlysystem($pdf, 'contracts/out.pdf'); // requires export.flysystem_adapter on the profile (or $flysystem injection)
 ```
+
+Each call writes the PDF once and disposes it (a temporary PDF is deleted). `PdfResponseFactory` sends the same
+`Content-Type` and RFC 6266 `Content-Disposition` headers as the deprecated `ExporterInterface::toStreamResponse()` /
+`toBinaryResponse()`. `binaryFile()` copies the PDF to its own download file (the deprecated `toBinaryResponse()`
+sent the converted file itself), so a replaced or decorated `PdfWriterInterface` is honoured.
+
+`Export\ExporterInterface` is **deprecated since 1.7.0** and removed in 2.0 (see [UPGRADING](UPGRADING.md#to-170)).
 
 ## Runtime check
 
@@ -87,57 +101,73 @@ php bin/console nowo:word-to-pdf:check
 php bin/console nowo:word-to-pdf:check --profile=batch
 ```
 
-## Using it from a DDD / hexagonal application
+## Standard Symfony host
 
-Word to PDF is an **infrastructure adapter** around LibreOffice. It has no Doctrine dependency, no events and no
-routes, and it never sees your entities: it takes file paths and returns a `ConvertedPdf` handle.
-
-**Standard Symfony project (default).** Inject `WordToPdfConverterInterface` and `ExporterInterface` in a controller
-and return `toStreamResponse()` / `toBinaryResponse()` (see [Export responses](#export-responses)).
-
-**DDD / hexagonal project (opt-in).** Hide the converter behind your own port (e.g. `PdfRenderer`) and depend on
-`Converter\WordToPdfConverterInterface`:
+Zero configuration. Word to PDF is an **infrastructure adapter** around LibreOffice: no Doctrine dependency, no
+events, no routes, no entities. Inject `WordToPdfConverterInterface` and `PdfResponseFactory` in a controller and
+return the response (see [Export responses](#export-responses)):
 
 ```php
-final readonly class LibreOfficePdfRenderer implements PdfRenderer
+public function download(WordToPdfConverterInterface $converter, PdfResponseFactory $responses): Response
 {
-    public function __construct(private WordToPdfConverterInterface $converter) {}
+    return $responses->binaryFile($converter->convert('/path/to/contract.docx'));
+}
+```
 
-    public function fromDocx(string $docxPath): string
+To replace the writer (another storage, audit logging), alias or decorate `PdfWriterInterface`;
+`PdfResponseFactory` then writes through your service. The deprecated `ExporterInterface` alias keeps pointing at
+`PdfExporter` unless you re-alias it yourself, to a service that implements it (`bin/console lint:container` checks
+that).
+
+## DDD / hexagonal host
+
+Opt-in. Hide the bundle behind your own port (e.g. `PdfRenderer`) and implement it in your infrastructure layer with
+the framework-free ports `Converter\WordToPdfConverterInterface` and `Export\PdfWriterInterface`; keep
+`PdfResponseFactory` in your HTTP adapters (controllers) only.
+
+```php
+// Domain / application port (yours)
+interface ContractPdfRenderer
+{
+    public function render(string $contractId, string $docxPath): string; // PDF bytes
+}
+
+// Infrastructure adapter (yours)
+final readonly class LibreOfficeContractPdfRenderer implements ContractPdfRenderer
+{
+    public function __construct(
+        private WordToPdfConverterInterface $converter,
+        private PdfWriterInterface $writer,
+    ) {}
+
+    public function render(string $contractId, string $docxPath): string
     {
-        $pdf = $this->converter->convert($docxPath);
+        $pdf = $this->converter->convertWithOptions($docxPath, ['export' => ['filename' => $contractId . '.pdf']]);
 
-        try {
-            return $pdf->readContents();
-        } finally {
-            $pdf->dispose();
-        }
+        return $this->writer->toBytes($pdf); // disposes the converted PDF
     }
 }
 ```
 
-- **Ports to type-hint:** `Converter\WordToPdfConverterInterface` (application/infrastructure side) and
-  `Export\ExporterInterface` (both public aliases); the result is the `Result\ConvertedPdf` value object
-  (`readContents()`, `path()`, `suggestedFilename()`, `dispose()`); errors implement `WordToPdfExceptionInterface`.
-- **Split the exporter by layer:** `ExporterInterface::toStreamResponse()` / `toBinaryResponse()` return Symfony HTTP
-  responses, so call them only from controllers (presentation). In application or infrastructure code use
-  `toFile()` / `toFlysystem()` or `ConvertedPdf::readContents()` / `path()`.
+- **Ports to type-hint:** `Converter\WordToPdfConverterInterface` and `Export\PdfWriterInterface` (public aliases,
+  no Symfony or HTTP type); the result is the `Result\ConvertedPdf` value object (`readContents()`, `path()`,
+  `suggestedFilename()`, `dispose()`); errors implement `WordToPdfExceptionInterface`.
 - **Replace or decorate:** point an alias at your own service or decorate it
-  (`decorates: Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface`) to add logging, metrics, caching or a
-  queue in front of LibreOffice.
+  (`decorates: Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface`, or `PdfWriterInterface`) to add
+  logging, metrics, caching or a queue in front of LibreOffice.
 - **IDs and events:** none. Name the output from your own IDs with the naming options
   ([Convert many (batch) + PDF naming](#convert-many-batch--pdf-naming)) and dispatch your own domain event from the
   adapter if you need one.
+- **Configuration:** named profiles, or `convertWithInlineProfile()` with a profile array your application stores; no
+  InstanceSettings or ORM dependency.
 - Conversion runs a LibreOffice process synchronously; in a hexagonal app run it from a Messenger handler when the
   request should not wait.
-
-What stays standard-only: the HTTP response helpers of `ExporterInterface` (presentation layer).
+- Tested: `tests/Integration/Kernel/DddHostKernelTest.php` boots this adapter in a host kernel and checks that the
+  framework-free ports and the adapter import no Symfony component or Doctrine type.
 
 ### Known limitations
 
 - The only engine is LibreOffice; another backend means implementing `WordToPdfConverterInterface` yourself.
-- `ExporterInterface` mixes HTTP response helpers and storage methods in one interface; keep the HTTP ones in
-  controllers.
 
 ## Fidelity notes
 

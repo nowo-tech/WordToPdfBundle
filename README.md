@@ -46,17 +46,20 @@ See [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md#shared-process_timeout-all
 
 ```php
 use Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface;
-use Nowo\WordToPdfBundle\Export\ExporterInterface;
+use Nowo\WordToPdfBundle\Http\PdfResponseFactory;
 use Nowo\WordToPdfBundle\Naming\PdfNaming;
 
-public function download(WordToPdfConverterInterface $converter, ExporterInterface $exporter): Response
+public function download(WordToPdfConverterInterface $converter, PdfResponseFactory $responses): Response
 {
     $pdf = $converter->convert('/path/to/contract.docx');
     // Batch: $converter->convertMany([$pathA, $pathB], PdfNaming::suffix(' [converted]'));
 
-    return $exporter->toBinaryResponse($pdf);
+    return $responses->binaryFile($pdf); // outside HTTP: PdfWriterInterface::toBytes() / toFile() / toFlysystem()
 }
 ```
+
+Both host kinds are supported: see [Standard Symfony host](docs/USAGE.md#standard-symfony-host) (zero config) and
+[DDD / hexagonal host](docs/USAGE.md#ddd--hexagonal-host) (framework-free `PdfWriterInterface`).
 
 ## System requirement
 

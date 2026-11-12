@@ -6,24 +6,30 @@ namespace Nowo\WordToPdfBundle\Export;
 
 use League\Flysystem\FilesystemOperator;
 use Nowo\WordToPdfBundle\Exception\ExportException;
+use Nowo\WordToPdfBundle\Http\PdfDownloadHeaders;
+use Nowo\WordToPdfBundle\Http\PdfResponseFactory;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 use function copy;
 use function fclose;
+use function file_get_contents;
+use function filesize;
 use function fopen;
 use function fpassthru;
+use function is_resource;
 use function is_string;
-use function preg_replace;
 use function sprintf;
+use function stream_copy_to_stream;
+use function trigger_deprecation;
 use function trim;
 
 /**
+ * Default {@see PdfWriterInterface} (and the deprecated {@see ExporterInterface}).
+ *
  * {@code league/flysystem} is optional (suggest): it is only needed for {@see toFlysystem()}; the other
  * exporters never touch Flysystem classes.
  *
@@ -31,7 +37,7 @@ use function trim;
  * {@code $flysystemAdapters}, built from the bundle configuration) or, when the profile sets none, to the
  * injected {@code $flysystem} operator.
  */
-final readonly class PdfExporter implements ExporterInterface
+final readonly class PdfExporter implements PdfWriterInterface, ExporterInterface
 {
     /**
      * @param FilesystemOperator|null $flysystem Optional default Flysystem operator
@@ -43,15 +49,57 @@ final readonly class PdfExporter implements ExporterInterface
     ) {
     }
 
+    public function toBytes(ConvertedPdf $pdf): string
+    {
+        try {
+            $bytes = @file_get_contents($pdf->path());
+            if ($bytes === false) {
+                throw new ExportException(sprintf('Could not read converted PDF at "%s".', $pdf->path()));
+            }
+
+            return $bytes;
+        } finally {
+            $pdf->dispose();
+        }
+    }
+
+    public function toStream(ConvertedPdf $pdf, mixed $stream): void
+    {
+        try {
+            if (!is_resource($stream)) {
+                throw new ExportException('PdfWriterInterface::toStream() expects an open, writable stream resource.');
+            }
+
+            $source = @fopen($pdf->path(), 'r');
+            if ($source === false) {
+                throw new ExportException(sprintf('Could not open PDF at "%s".', $pdf->path()));
+            }
+            try {
+                $copied = @stream_copy_to_stream($source, $stream);
+                if ($copied === false || $copied !== filesize($pdf->path())) {
+                    throw new ExportException('Could not copy the PDF into the target stream.');
+                }
+            } finally {
+                fclose($source);
+            }
+        } finally {
+            $pdf->dispose();
+        }
+    }
+
     /**
      * Stream the PDF as an HTTP response.
      *
      * @param ConvertedPdf $pdf Converted PDF handle
      *
      * @return StreamedResponse
+     *
+     * @deprecated since 1.7.0, use {@see PdfResponseFactory::streamed()}
      */
     public function toStreamResponse(ConvertedPdf $pdf): StreamedResponse
     {
+        trigger_deprecation('nowo-tech/word-to-pdf-bundle', '1.7', 'Calling "%s()" is deprecated, use "%s::streamed()" instead.', __METHOD__, PdfResponseFactory::class);
+
         $filename = $pdf->suggestedFilename();
         $path     = $pdf->path();
 
@@ -74,7 +122,7 @@ final readonly class PdfExporter implements ExporterInterface
                 }
             },
             200,
-            $this->responseHeaders($filename),
+            PdfDownloadHeaders::for($filename),
         );
     }
 
@@ -84,13 +132,17 @@ final readonly class PdfExporter implements ExporterInterface
      * @param ConvertedPdf $pdf Converted PDF handle
      *
      * @return BinaryFileResponse
+     *
+     * @deprecated since 1.7.0, use {@see PdfResponseFactory::binaryFile()}
      */
     public function toBinaryResponse(ConvertedPdf $pdf): BinaryFileResponse
     {
+        trigger_deprecation('nowo-tech/word-to-pdf-bundle', '1.7', 'Calling "%s()" is deprecated, use "%s::binaryFile()" instead.', __METHOD__, PdfResponseFactory::class);
+
         $filename = $pdf->suggestedFilename();
         $response = new BinaryFileResponse($pdf->path());
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Disposition', $this->contentDisposition($filename));
+        $response->headers->set('Content-Type', PdfDownloadHeaders::CONTENT_TYPE);
+        $response->headers->set('Content-Disposition', PdfDownloadHeaders::contentDisposition($filename));
         if ($pdf->isTemporary()) {
             $response->deleteFileAfterSend(true);
         }
@@ -151,32 +203,6 @@ final readonly class PdfExporter implements ExporterInterface
         } finally {
             $pdf->dispose();
         }
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function responseHeaders(string $filename): array
-    {
-        return [
-            'Content-Type'        => 'application/pdf',
-            'Content-Disposition' => $this->contentDisposition($filename),
-        ];
-    }
-
-    /**
-     * RFC 6266 attachment header (quoted ASCII fallback + filename* UTF-8) via {@see HeaderUtils::makeDisposition()},
-     * so quotes, CR/LF, path separators or non-ASCII characters in export.filename cannot break or inject headers.
-     */
-    private function contentDisposition(string $filename): string
-    {
-        $filename = trim((string) preg_replace('/[\x00-\x1F\x7F\/\\\\]+/u', '_', $filename));
-        if (trim($filename, ' _.') === '') {
-            $filename = 'document.pdf';
-        }
-        $fallback = (string) preg_replace('/[^\x20-\x7E]|[%"]/u', '_', $filename);
-
-        return HeaderUtils::makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename, $fallback);
     }
 
     private function resolveFilesystem(ConvertedPdf $pdf): FilesystemOperator

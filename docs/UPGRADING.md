@@ -7,6 +7,7 @@
   - [Breaking changes](#breaking-changes)
 - [From 1.2.7 to 1.2.8](#from-127-to-128)
 - [Unreleased](#unreleased)
+- [To 1.7.0](#to-170)
 - [To 1.6.0](#to-160)
 - [To 1.5.1](#to-151)
 - [To 1.5.0](#to-150)
@@ -74,6 +75,35 @@ composer update nowo-tech/word-to-pdf-bundle
 ```
 
 ## Unreleased
+
+## To 1.7.0
+
+From **1.6.x**: no breaking change.
+
+```bash
+composer update nowo-tech/word-to-pdf-bundle
+```
+
+`ExporterInterface` is deprecated (REQ-ARCH-001 rule 3: it mixes HttpFoundation responses with storage) and is removed
+in **2.0**. Replace it as follows:
+
+| Deprecated (1.x) | Since 1.7.0 |
+|---|---|
+| `ExporterInterface::toStreamResponse($pdf)` | `PdfResponseFactory::streamed($pdf)` |
+| `ExporterInterface::toBinaryResponse($pdf)` | `PdfResponseFactory::binaryFile($pdf)` |
+| `ExporterInterface::toFile($pdf, $path)` | `PdfWriterInterface::toFile($pdf, $path)` |
+| `ExporterInterface::toFlysystem($pdf, $path)` | `PdfWriterInterface::toFlysystem($pdf, $path)` |
+| `ConvertedPdf::readContents()` + `dispose()` | `PdfWriterInterface::toBytes($pdf)` |
+
+- Inject `Nowo\WordToPdfBundle\Http\PdfResponseFactory` in controllers and
+  `Nowo\WordToPdfBundle\Export\PdfWriterInterface` everywhere else.
+- **Hosts implementing `ExporterInterface`:** implement `PdfWriterInterface` instead (or both during the migration)
+  and alias or decorate `PdfWriterInterface`; `PdfResponseFactory` then uses your service. If you keep re-aliasing
+  `ExporterInterface`, point it at a service that implements it (`lint:container` checks it). The bundle never
+  aliases `ExporterInterface` to your `PdfWriterInterface` service.
+- `PdfResponseFactory::binaryFile()` copies the converted PDF to its own temporary download file (deleted after
+  sending) and disposes the converted PDF at once; the deprecated `toBinaryResponse()` sent the converted file itself.
+  Same bytes and headers; one extra file copy.
 
 ## To 1.6.0
 
