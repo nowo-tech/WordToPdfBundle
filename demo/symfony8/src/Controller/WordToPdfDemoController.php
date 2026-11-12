@@ -9,7 +9,7 @@ use Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface;
 use Nowo\WordToPdfBundle\Exception\ConversionFailedException;
 use Nowo\WordToPdfBundle\Exception\MissingDependencyException;
 use Nowo\WordToPdfBundle\Exception\WordToPdfExceptionInterface;
-use Nowo\WordToPdfBundle\Export\ExporterInterface;
+use Nowo\WordToPdfBundle\Http\PdfResponseFactory;
 use Nowo\WordToPdfBundle\Naming\PdfNaming;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
@@ -46,7 +46,7 @@ final class WordToPdfDemoController extends AbstractController
 
     public function __construct(
         private readonly WordToPdfConverterInterface $converter,
-        private readonly ExporterInterface $exporter,
+        private readonly PdfResponseFactory $responses,
         private readonly RuntimeRequirementsChecker $checker,
         private readonly ProfileResolver $profiles,
     ) {
@@ -202,7 +202,7 @@ final class WordToPdfDemoController extends AbstractController
             $converted = $this->converter->convertMany($sources);
 
             if (count($converted) === 1) {
-                return $this->exporter->toBinaryResponse($converted[0]);
+                return $this->responses->binaryFile($converted[0]);
             }
 
             return $this->zipConvertedPdfs($converted);
@@ -296,7 +296,7 @@ final class WordToPdfDemoController extends AbstractController
         try {
             $pdfs = $this->converter->convertMany([$sample], PdfNaming::suffix(' [converted]'));
 
-            return $this->exporter->toBinaryResponse($pdfs[0]);
+            return $this->responses->binaryFile($pdfs[0]);
         } catch (MissingDependencyException $e) {
             return new Response($e->getMessage(), 503, ['Content-Type' => 'text/plain; charset=UTF-8']);
         } catch (WordToPdfExceptionInterface $e) {

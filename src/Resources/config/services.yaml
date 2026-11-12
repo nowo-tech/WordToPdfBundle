@@ -32,9 +32,24 @@ services:
             $flysystem: null
             $flysystemAdapters: null
 
+    # Framework-free output port (1.7.0). Alias or decorate it to replace the writer: PdfResponseFactory follows it.
+    Nowo\WordToPdfBundle\Export\PdfWriterInterface:
+        alias: Nowo\WordToPdfBundle\Export\PdfExporter
+        public: true
+
+    # HTTP edge (1.7.0): responses built through PdfWriterInterface.
+    Nowo\WordToPdfBundle\Http\PdfResponseFactory:
+        public: true
+
+    # Deprecated since 1.7.0 (removed in 2.0). PdfExporter implements it; a host that re-aliases it must point it at a
+    # service that implements it (Symfony's lint:container checks this).
     Nowo\WordToPdfBundle\Export\ExporterInterface:
         alias: Nowo\WordToPdfBundle\Export\PdfExporter
         public: true
+        deprecated:
+            package: nowo-tech/word-to-pdf-bundle
+            version: '1.7'
+            message: 'The "%alias_id%" service alias is deprecated, use "Nowo\WordToPdfBundle\Export\PdfWriterInterface" and "Nowo\WordToPdfBundle\Http\PdfResponseFactory" instead.'
 
     Nowo\WordToPdfBundle\Command\CheckRuntimeCommand:
         arguments:

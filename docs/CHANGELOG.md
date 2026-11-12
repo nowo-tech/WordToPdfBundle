@@ -34,9 +34,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+Target: **1.7.0** (minor). REQ-ARCH-001 rule 3: HTTP split out of the export port. See [UPGRADING](UPGRADING.md#to-170).
+
+### Added
+
+- `Export\PdfWriterInterface`: framework-free output port with `toBytes()`, `toStream($stream)`, `toFile()` and
+  `toFlysystem()` (no Symfony or HTTP type in its signatures; each call disposes the converted PDF). `PdfExporter`
+  implements it; public alias.
+- `Http\PdfResponseFactory` (HTTP edge, public service): `streamed()` and `binaryFile()` build the download
+  responses through `PdfWriterInterface`, with the same `Content-Type` and RFC 6266 `Content-Disposition` headers as
+  before. When the host aliases or decorates `PdfWriterInterface`, the factory uses the host service.
+
+### Deprecated
+
+- `Export\ExporterInterface` (and its public service alias) and `PdfExporter::toStreamResponse()` /
+  `PdfExporter::toBinaryResponse()`: use `PdfWriterInterface` and `PdfResponseFactory`. Removed in 2.0. The
+  deprecated methods behave as before and now trigger a deprecation.
+
 ### Documentation
 
-- USAGE: new section "Using it from a DDD / hexagonal application" (own port on `WordToPdfConverterInterface`, HTTP exporter helpers only in controllers, replace/decorate through the aliases, known limitations).
+- USAGE: "Standard Symfony host" and "DDD / hexagonal host" sections (own port on `WordToPdfConverterInterface` +
+  `PdfWriterInterface`, `PdfResponseFactory` only in controllers, replace/decorate through the aliases), linked from
+  the README.
+
+### Tests
+
+- `PdfWriterEquivalenceTest`: old vs new: same bytes, status and headers (6 filename cases incl. header injection
+  and UTF-8), same disposal of temporary and kept PDFs; error paths (non-stream, read-only stream, missing PDF).
+- `Kernel\PortAliasValidityKernelTest`: `lint:container` passes for a host on the new port only, the deprecated port
+  only, both, and a decorator of the new port; `PdfResponseFactory` gets the host service of the new port.
+- `Kernel\DddHostKernelTest`: a DDD host adapter converts (fake `soffice`) and returns PDF bytes through the
+  framework-free ports.
+
+### Changed
+
+- `toFlysystem()` now disposes a temporary PDF also when the Flysystem adapter is missing, unknown or of the wrong
+  type (audit MW-W-L1). Before, the adapter was resolved before the `try`/`finally`, so the temporary PDF stayed on
+  disk after the `ExportException`. Same rule as every other export method.
+- Demo controller uses `PdfResponseFactory`. `symfony/deprecation-contracts` is now a direct requirement (it was
+  already installed through `symfony/dependency-injection`).
 
 ## [1.6.0] - 2026-10-30
 

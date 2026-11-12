@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Nowo\WordToPdfBundle\Export;
 
+use Nowo\WordToPdfBundle\Http\PdfResponseFactory;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Exports a ConvertedPdf to HTTP responses, local files, or Flysystem.
+ *
+ * @deprecated since 1.7.0, removed in 2.0. It mixes HttpFoundation responses with storage (REQ-ARCH-001 rule 3):
+ *             write PDFs through {@see PdfWriterInterface} and build downloads with
+ *             {@see PdfResponseFactory}. Hosts implementing it implement
+ *             {@see PdfWriterInterface} instead.
  */
 interface ExporterInterface
 {
@@ -19,6 +25,8 @@ interface ExporterInterface
      * @param ConvertedPdf $pdf Converted PDF handle
      *
      * @return StreamedResponse
+     *
+     * @deprecated since 1.7.0, use {@see PdfResponseFactory::streamed()}
      */
     public function toStreamResponse(ConvertedPdf $pdf): StreamedResponse;
 
@@ -28,6 +36,8 @@ interface ExporterInterface
      * @param ConvertedPdf $pdf Converted PDF handle
      *
      * @return BinaryFileResponse
+     *
+     * @deprecated since 1.7.0, use {@see PdfResponseFactory::binaryFile()}
      */
     public function toBinaryResponse(ConvertedPdf $pdf): BinaryFileResponse;
 

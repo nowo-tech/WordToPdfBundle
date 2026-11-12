@@ -56,6 +56,7 @@ A bundle that is safe under **B** is safe under **A** and under classic mode / P
 | `LibreOfficeBinaryLocator` | yes | none | ✅ | ✅ |
 | `RuntimeRequirementsChecker` | yes | none | ✅ | ✅ |
 | `PdfExporter` | yes | none (`final readonly`) | ✅ | ✅ |
+| `PdfResponseFactory` (1.7.0) | yes | none (`final readonly`, only the `PdfWriterInterface` dependency; the download copy is deleted after sending) | ✅ | ✅ |
 | `RuntimeBootCheckListener` | yes | `$checked`; `ResetInterface::reset()` no-op | ✅ | ✅ |
 | `CheckRuntimeCommand` | yes (CLI) | none | ✅ | ✅ |
 | `WordToPdfBundle` | N/A (bundle) | none (stateless `getContainerExtension()`) | ✅ | ✅ |
