@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.7.1] - 2026-11-12](#171---2026-11-12)
 - [[1.7.0] - 2026-11-12](#170---2026-11-12)
 - [[1.6.0] - 2026-10-30](#160---2026-10-30)
 - [[1.5.1] - 2026-10-28](#151---2026-10-28)
@@ -34,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [[1.0.0] - 2026-07-22](#100---2026-07-22)
 
 ## [Unreleased]
+
+## [1.7.1] - 2026-11-12
 
 Target: **1.7.1** (patch). REQ-RUNTIME-002: worker test with kernel reset false; no behaviour change. See
 [UPGRADING](UPGRADING.md#to-171).
@@ -186,6 +189,7 @@ WordToPdf: the converted PDF gets a random name and mode 0600 in the shared temp
 
 - **Igor IncompleteReset:** `RuntimeBootCheckListener::$checked` is marked `#[WorkerSafe]` (once-per-worker LibreOffice probe, **REQ-RUNTIME-002**) so `make igor` reports 0 WARN without changing the intentional no-op `reset()`.
 
+[1.7.1]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.7.1
 [1.7.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.7.0
 [1.6.0]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.6.0
 [1.5.1]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.5.1
@@ -386,7 +390,7 @@ First stable release.
 - System: **LibreOffice Writer** (`libreoffice-writer` / `soffice`) on the host or container
 - Demo image: FrankenPHP **PHP 8.4** (Symfony 8.1)
 
-[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/nowo-tech/WordToPdfBundle/compare/v1.7.1...HEAD
 [1.2.4]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.4
 [1.2.3]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.3
 [1.2.2]: https://github.com/nowo-tech/WordToPdfBundle/releases/tag/v1.2.2
