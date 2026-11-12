@@ -104,6 +104,9 @@ in **2.0**. Replace it as follows:
 - `PdfResponseFactory::binaryFile()` copies the converted PDF to its own temporary download file (deleted after
   sending) and disposes the converted PDF at once; the deprecated `toBinaryResponse()` sent the converted file itself.
   Same bytes and headers; one extra file copy.
+- `toFlysystem()` disposes the converted PDF also when the adapter cannot be resolved (the `ExportException` is
+  unchanged). If you caught that exception to retry with another target, convert again (or convert with a profile
+  whose output is not temporary).
 
 ## To 1.6.0
 

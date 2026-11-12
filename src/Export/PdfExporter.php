@@ -186,10 +186,10 @@ final readonly class PdfExporter implements PdfWriterInterface, ExporterInterfac
      */
     public function toFlysystem(ConvertedPdf $pdf, string $remotePath): void
     {
-        $filesystem = $this->resolveFilesystem($pdf);
-
         try {
-            $stream = fopen($pdf->path(), 'r');
+            // Inside the try: a missing or invalid adapter still disposes the converted PDF.
+            $filesystem = $this->resolveFilesystem($pdf);
+            $stream     = fopen($pdf->path(), 'r');
             // @codeCoverageIgnoreStart
             if ($stream === false) {
                 throw new ExportException(sprintf('Could not open PDF at "%s" for Flysystem upload.', $pdf->path()));

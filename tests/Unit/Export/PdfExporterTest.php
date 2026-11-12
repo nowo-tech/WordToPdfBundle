@@ -149,7 +149,8 @@ final class PdfExporterTest extends TestCase
         self::assertFileDoesNotExist($src);
     }
 
-    public function testUnknownProfileAdapterThrowsAndKeepsPdf(): void
+    /** 1.7.0 (audit MW-W-L1): the temporary PDF is disposed even when the adapter is unknown. */
+    public function testUnknownProfileAdapterThrowsAndDisposesPdf(): void
     {
         $src = tempnam(sys_get_temp_dir(), 'wtp_pdf_');
         self::assertNotFalse($src);
@@ -159,7 +160,7 @@ final class PdfExporterTest extends TestCase
             self::fail('Expected ExportException');
         } catch (ExportException $e) {
             self::assertStringContainsString('Flysystem adapter "app.missing" is not available', $e->getMessage());
-            self::assertFileExists($src);
+            self::assertFileDoesNotExist($src);
         } finally {
             @unlink($src);
         }

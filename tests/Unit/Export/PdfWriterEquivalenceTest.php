@@ -196,6 +196,28 @@ final class PdfWriterEquivalenceTest extends TestCase
         self::assertSame($before, glob(sys_get_temp_dir() . '/word_to_pdf_dl_*') ?: []);
     }
 
+    /** Audit MW-W-L1: a missing or unknown Flysystem adapter still disposes the temporary PDF. */
+    public function testMissingFlysystemAdapterDisposesThePdf(): void
+    {
+        $missing = $this->pdf('%PDF', true, 'm.pdf', $path);
+        try {
+            (new PdfExporter())->toFlysystem($missing, 'remote/m.pdf');
+            self::fail('Expected ExportException.');
+        } catch (ExportException $e) {
+            self::assertStringContainsString('Flysystem adapter is not configured', $e->getMessage());
+        }
+        self::assertFileDoesNotExist($path);
+
+        $unknown = new ConvertedPdf($this->pdfPath('%PDF'), true, 'u.pdf', 'app.unknown_storage');
+        try {
+            (new PdfExporter())->toFlysystem($unknown, 'remote/u.pdf');
+            self::fail('Expected ExportException.');
+        } catch (ExportException $e) {
+            self::assertStringContainsString('app.unknown_storage', $e->getMessage());
+        }
+        self::assertFileDoesNotExist($unknown->path());
+    }
+
     public function testFlysystemThroughThePort(): void
     {
         $fs = $this->createMock(FilesystemOperator::class);
@@ -221,6 +243,15 @@ final class PdfWriterEquivalenceTest extends TestCase
         file_put_contents($path, $bytes);
 
         return new ConvertedPdf($path, $temporary, $filename);
+    }
+
+    private function pdfPath(string $bytes): string
+    {
+        $path            = (string) tempnam(sys_get_temp_dir(), 'wtp_src_');
+        $this->cleanup[] = $path;
+        file_put_contents($path, $bytes);
+
+        return $path;
     }
 
     private function send(Response $response): string

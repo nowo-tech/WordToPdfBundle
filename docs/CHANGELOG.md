@@ -68,6 +68,9 @@ Target: **1.7.0** (minor). REQ-ARCH-001 rule 3: HTTP split out of the export por
 
 ### Changed
 
+- `toFlysystem()` now disposes a temporary PDF also when the Flysystem adapter is missing, unknown or of the wrong
+  type (audit MW-W-L1). Before, the adapter was resolved before the `try`/`finally`, so the temporary PDF stayed on
+  disk after the `ExportException`. Same rule as every other export method.
 - Demo controller uses `PdfResponseFactory`. `symfony/deprecation-contracts` is now a direct requirement (it was
   already installed through `symfony/dependency-injection`).
 
