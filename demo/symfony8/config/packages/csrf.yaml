@@ -1,8 +1,12 @@
-# Classic session CSRF (no Stimulus/importmap required for this demo).
-# The Flex recipe enables cookie-based "stateless" tokens that need
-# data-controller="csrf-protection" JS — not wired in this minimal demo.
+# CSRF: stateless tokens; FormKit forms render the `_token` field (security-csrf provides the token manager).
 framework:
-    csrf_protection: true
     form:
         csrf_protection:
-            enabled: true
+            token_id: submit
+
+    csrf_protection:
+        enabled: true
+        stateless_token_ids:
+            - submit
+            - authenticate
+            - logout
