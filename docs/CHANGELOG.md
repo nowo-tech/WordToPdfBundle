@@ -35,6 +35,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+Target: **1.7.1** (patch). REQ-RUNTIME-002: worker test with kernel reset false; no behaviour change. See
+[UPGRADING](UPGRADING.md#to-171).
+
+### Tests
+
+- `WorkerKeptAliveKernelTest`: one kernel, the services resetter never runs, 300 conversions through the fake `soffice`
+  as two tenant profiles in alternation. Each conversion gets its own tenant's download name and temp dir, no result
+  PDF, conversion workspace or version-probe profile is left behind, memory grows less than 2 MiB after a 30-conversion
+  warm-up, and the binary-version memo holds one entry per binary path.
+
+### Changed
+
+- Docs: `docs/FRANKENPHP-WORKER-AUDIT.md` re-audited for 1.7.1: the `RuntimeRequirementsChecker` row documents the
+  per-process binary-version memo (cleared only by `kernel.reset`, accepted: not request data), the new worker test is
+  named and kernel reset false is stated as supported. The `RuntimeRequirementsChecker` docblock no longer says the memo
+  lives "once per request" in worker mode.
+
 ## [1.7.0] - 2026-11-12
 
 Target: **1.7.0** (minor). REQ-ARCH-001 rule 3: HTTP split out of the export port. See [UPGRADING](UPGRADING.md#to-170).
