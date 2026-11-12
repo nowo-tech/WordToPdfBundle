@@ -32,8 +32,10 @@ use const DIRECTORY_SEPARATOR;
  * Validates that LibreOffice Writer (system package libreoffice-writer) is installed and usable.
  *
  * {@code soffice --version} runs with a throw-away {@code -env:UserInstallation} profile (never the shared
- * ~/.config/libreoffice one) and its result is memoized per binary path until {@see reset()} (kernel.reset,
- * i.e. once per request under FrankenPHP worker mode), so batches and repeated checks spawn it only once.
+ * ~/.config/libreoffice one) and its successful result is memoized per binary path until {@see reset()}
+ * (kernel.reset), so batches and repeated checks spawn it only once. The memo is process data, not request data
+ * (one version string per configured binary): in a FrankenPHP worker without the services resetter it lives for the
+ * worker's lifetime, which is intended (REQ-RUNTIME-002; see docs/FRANKENPHP-WORKER-AUDIT.md).
  */
 class RuntimeRequirementsChecker implements ResetInterface
 {

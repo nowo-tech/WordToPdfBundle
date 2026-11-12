@@ -6,6 +6,7 @@ namespace Nowo\WordToPdfBundle\Tests\Fixtures\Kernel;
 
 use Nowo\WordToPdfBundle\Export\ExporterInterface;
 use Nowo\WordToPdfBundle\Export\PdfWriterInterface;
+use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
 use Nowo\WordToPdfBundle\Tests\Fixtures\Kernel\DddHost\Domain\ContractPdfRenderer;
 use Nowo\WordToPdfBundle\Tests\Fixtures\Kernel\DddHost\Infrastructure\LibreOfficeContractPdfRenderer;
 use Nowo\WordToPdfBundle\Tests\Fixtures\Kernel\Ports\DecoratingPdfWriter;
@@ -25,7 +26,8 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 /**
  * Host kernel for the port tests. `$variant` re-points the bundle's output ports the way a host would in its own
  * services.yaml: `new` (the 1.7 port only), `legacy` (the deprecated port only), `both`, `decorator` (a decorator of
- * the 1.7 port), `ddd` (a DDD host adapter on the framework-free ports) or `none` (bundle defaults). LibreOffice is the
+ * the 1.7 port), `ddd` (a DDD host adapter on the framework-free ports), `worker` (two tenant profiles, bundle
+ * defaults otherwise) or `none` (bundle defaults). LibreOffice is the
  * fake `soffice` script of the unit tests.
  */
 final class HostKernel extends Kernel
@@ -68,7 +70,10 @@ final class HostKernel extends Kernel
             'http_method_override' => false,
             'php_errors'           => ['log' => true],
         ]);
-        $container->extension('nowo_word_to_pdf', [
+        $container->extension('nowo_word_to_pdf', $this->variant === 'worker' ? [
+            'default_profile' => 'alpha',
+            'profiles'        => $this->workerProfiles(),
+        ] : [
             'profiles' => [
                 'default' => [
                     'binary_path' => __DIR__ . '/../fake-soffice.sh',
@@ -86,6 +91,29 @@ final class HostKernel extends Kernel
             'ddd'       => $this->dddHost($services),
             default     => null,
         };
+    }
+
+    /**
+     * Two tenants with their own temp dir and download name; "alpha" also sets `min_version`, so every conversion goes
+     * through the per-process binary-version memo of {@see RuntimeRequirementsChecker}.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function workerProfiles(): array
+    {
+        return [
+            'alpha' => [
+                'binary_path' => __DIR__ . '/../fake-soffice.sh',
+                'temp_dir'    => $this->baseDir . '/alpha',
+                'min_version' => '24.2',
+                'export'      => ['filename' => 'alpha-invoice.pdf'],
+            ],
+            'beta' => [
+                'binary_path' => __DIR__ . '/../fake-soffice.sh',
+                'temp_dir'    => $this->baseDir . '/beta',
+                'export'      => ['filename' => 'beta-contract.pdf'],
+            ],
+        ];
     }
 
     private function newPortOnly(ServicesConfigurator $services): void
