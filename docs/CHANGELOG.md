@@ -36,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Demo uses the UiKit base style and FormKit forms (REQ-DEMO-014/015).
+
 ## [1.7.1] - 2026-11-12
 
 Target: **1.7.1** (patch). REQ-RUNTIME-002: worker test with kernel reset false; no behaviour change. See

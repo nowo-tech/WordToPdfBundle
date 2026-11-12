@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\UploadDocumentsType;
 use Nowo\WordToPdfBundle\Config\ProfileResolver;
 use Nowo\WordToPdfBundle\Converter\WordToPdfConverterInterface;
 use Nowo\WordToPdfBundle\Exception\ConversionFailedException;
@@ -14,17 +15,12 @@ use Nowo\WordToPdfBundle\Naming\PdfNaming;
 use Nowo\WordToPdfBundle\Result\ConvertedPdf;
 use Nowo\WordToPdfBundle\Runtime\RuntimeRequirementsChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Constraints\All;
-use Symfony\Component\Validator\Constraints\Count;
-use Symfony\Component\Validator\Constraints\File;
 use Throwable;
 use ZipArchive;
 
@@ -57,42 +53,7 @@ final class WordToPdfDemoController extends AbstractController
     {
         $runtime = $this->checker->diagnose($this->profiles->resolveDefault());
 
-        $form = $this->createFormBuilder()
-            ->add('documents', FileType::class, [
-                'label'    => 'Word documents (.docx / .doc) — one or more',
-                'mapped'   => false,
-                'required' => true,
-                'multiple' => true,
-                'attr'     => [
-                    'accept'   => '.docx,.doc,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword',
-                    'multiple' => 'multiple',
-                ],
-                'constraints' => [
-                    new Count(
-                        min: 1,
-                        max: self::MAX_UPLOADS,
-                        minMessage: 'Please upload at least one Word document.',
-                        maxMessage: sprintf('You can upload at most %d Word documents at once.', self::MAX_UPLOADS),
-                    ),
-                    new All([
-                        new File(
-                            maxSize: '20M',
-                            extensions: ['docx', 'doc'],
-                            extensionsMessage: 'Please upload .docx or .doc files (not PDF or other formats).',
-                            mimeTypes: [
-                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                                'application/msword',
-                                'application/zip',
-                                'application/octet-stream',
-                            ],
-                            mimeTypesMessage: 'Please upload .docx or .doc files (not PDF or other formats).',
-                        ),
-                    ]),
-                ],
-            ])
-            ->add('convert', SubmitType::class, ['label' => 'Convert to PDF'])
-            ->getForm();
-
+        $form = $this->createForm(UploadDocumentsType::class, null, ['max_uploads' => self::MAX_UPLOADS]);
         $form->handleRequest($request);
         $error = null;
 
@@ -149,7 +110,7 @@ final class WordToPdfDemoController extends AbstractController
     }
 
     /**
-     * Flash danger when any upload extension is not .docx/.doc.
+     * Flash error when any upload extension is not .docx/.doc.
      *
      * @param list<UploadedFile>|UploadedFile|null $upload
      *
@@ -165,7 +126,7 @@ final class WordToPdfDemoController extends AbstractController
             }
 
             $this->addFlash(
-                'danger',
+                'error',
                 sprintf(
                     'Invalid file extension%s on "%s". Please upload .docx or .doc files (not PDF or other formats).',
                     $ext !== '' ? sprintf(' ".%s"', $ext) : '',
