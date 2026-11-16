@@ -89,6 +89,8 @@ Production source count: every PHP class under `src/` plus `src/Resources/config
 | FR-RUNTIME-002 | ProcessRunner applies timeout + idle timeout; force-stops and reaps orphans on failure (**REQ-RUNTIME-001**). |
 | FR-RUNTIME-003 | Bundle is safe under FrankenPHP worker with `FRANKENPHP_RESET_KERNEL` unset/false (**REQ-RUNTIME-002**): no request-scoped leaks; boot-check `reset()` is a no-op; PHPStan `ruleset-worker-no-kernel-reset`. |
 | FR-EXPORT-001 | PdfExporter implements stream/binary/file/Flysystem export. |
+| FR-EXPORT-002 | `PdfWriterInterface` is the framework-free output port (bytes, stream, local path, Flysystem); no Symfony / HTTP types, so CLI, Messenger and DDD adapters depend on it (**REQ-ARCH-001**). |
+| FR-EXPORT-003 | `PdfResponseFactory` + `PdfDownloadHeaders` build download / inline responses at the HTTP edge through the writer port. |
 | FR-CLI-001 | `nowo:word-to-pdf:check` prints diagnose and exit codes. |
 | FR-BOOT-001 | Optional request listener boot-checks LibreOffice once per worker. |
 | FR-ERR-001 | Typed exceptions implement `WordToPdfExceptionInterface`. |

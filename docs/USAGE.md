@@ -8,6 +8,7 @@
 - [Runtime check](#runtime-check)
 - [Standard Symfony host](#standard-symfony-host)
 - [DDD / hexagonal host](#ddd--hexagonal-host)
+  - [Known limitations](#known-limitations)
 - [Fidelity notes](#fidelity-notes)
 - [Forms in host apps and demos (REQ-TWIG-005)](#forms-in-host-apps-and-demos-req-twig-005)
 

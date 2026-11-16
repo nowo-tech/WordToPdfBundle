@@ -23,3 +23,15 @@ updates:
           - "rector/rector"
     commit-message:
       prefix: "composer"
+
+  # pip dependencies of the Python tests (REQ-GH-002, REQ-TEST-004)
+  - package-ecosystem: "pip"
+    directory: "/tests_python"
+    schedule:
+      interval: "weekly"
+    groups:
+      pip-tests-python:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "deps"

@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/word-to-pdf-bundle`  
-**Last audited**: 2026-09-25
+**Last audited**: 2026-11-16
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. Test-only files under `tests/` and demo trees are out of Packagist scope unless promoted in the spec.
 
@@ -10,9 +10,9 @@ This file proves that **every production source artifact** under `src/` is refer
 
 | Category | Count |
 | --- | --- |
-| PHP classes / interfaces | 22 |
+| PHP classes / interfaces | 25 |
 | Symfony YAML under `Resources/config` | 2 |
-| **Total inventory rows** | **24** |
+| **Total inventory rows** | **27** |
 
 ## PHP classes (`src/**/*.php`)
 
@@ -33,8 +33,11 @@ This file proves that **every production source artifact** under `src/` is refer
 | `Exception/InvalidProfileException.php` | Profile errors | FR-ERR-001, US-02 |
 | `Exception/MissingDependencyException.php` | Missing Writer | FR-ERR-001, US-03 |
 | `Exception/UnsupportedFormatException.php` | Bad extension | FR-ERR-001, US-01 |
-| `Export/ExporterInterface.php` | Export contract | FR-EXPORT-001, US-04 |
+| `Export/ExporterInterface.php` | Export contract (response methods deprecated since 1.7.0) | FR-EXPORT-001, US-04 |
 | `Export/PdfExporter.php` | HTTP / file / Flysystem | FR-EXPORT-001, US-04 |
+| `Export/PdfWriterInterface.php` | Framework-free output port: bytes / stream / path / Flysystem (1.7.0) | FR-EXPORT-002, US-04 |
+| `Http/PdfResponseFactory.php` | HTTP edge: PDF download / inline response from the writer port (1.7.0) | FR-EXPORT-003, US-04 |
+| `Http/PdfDownloadHeaders.php` | Shared download headers (safe filename, Content-Disposition, MIME) | FR-EXPORT-003 |
 | `Naming/PdfNaming.php` | Batch PDF naming | FR-NAMING-001 |
 | `Result/ConvertedPdf.php` | PDF result handle | FR-CONVERT-001, US-04 |
 | `Runtime/LibreOfficeBinaryLocator.php` | Find soffice | FR-RUNTIME-001, US-03 |
