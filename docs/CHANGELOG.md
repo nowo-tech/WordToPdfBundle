@@ -40,6 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Demo uses the UiKit base style and FormKit forms (REQ-DEMO-014/015).
 
+### Documentation
+
+- REQ compliance sweep 2026-11-16: Spec Kit baseline maps the 1.7.0 output port and HTTP edge (`PdfWriterInterface`, `PdfResponseFactory`, `PdfDownloadHeaders`; FR-EXPORT-002/003), inventory 27/27 (REQ-SPECKIT-001/003); USAGE table of contents lists "Known limitations" (REQ-DOCS-005); Dependabot tracks the `tests_python` pip requirements (REQ-GH-002).
+
 ## [1.7.1] - 2026-11-12
 
 Target: **1.7.1** (patch). REQ-RUNTIME-002: worker test with kernel reset false; no behaviour change. See
