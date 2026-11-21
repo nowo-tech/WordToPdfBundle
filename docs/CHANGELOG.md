@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Demo: runs in UiKit's demo platform shell (`nowo-tech/ui-kit-bundle` ^2.60); the demo's own header is gone, the page uses the shell page header and section cards, and conversion errors are shell flashes. The demo gains a minimal Playwright e2e (`make test-e2e`). Demo only, no bundle change.
 - Demo uses the UiKit base style and FormKit forms (REQ-DEMO-014/015).
 
 ### Documentation

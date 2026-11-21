@@ -55,7 +55,6 @@ final class WordToPdfDemoController extends AbstractController
 
         $form = $this->createForm(UploadDocumentsType::class, null, ['max_uploads' => self::MAX_UPLOADS]);
         $form->handleRequest($request);
-        $error = null;
 
         if ($form->isSubmitted() && !$form->isValid()) {
             $this->flashIfBadUploadExtensions($form->get('documents')->getData());
@@ -66,12 +65,12 @@ final class WordToPdfDemoController extends AbstractController
             $raw     = $form->get('documents')->getData();
             $uploads = $this->normalizeUploads($raw);
             if ($uploads === []) {
-                $error = 'No file uploaded.';
+                $this->addFlash('error', 'No file uploaded.');
             } elseif (!$this->flashIfBadUploadExtensions($uploads)) {
                 try {
                     return $this->convertUploads($uploads);
                 } catch (WordToPdfExceptionInterface $e) {
-                    $error = $e->getMessage();
+                    $this->addFlash('error', $e->getMessage());
                 }
             }
         }
@@ -79,7 +78,6 @@ final class WordToPdfDemoController extends AbstractController
         return $this->render('demo/index.html.twig', [
             'form'       => $form,
             'runtime'    => $runtime,
-            'error'      => $error,
             'maxUploads' => self::MAX_UPLOADS,
         ]);
     }

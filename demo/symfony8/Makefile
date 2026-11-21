@@ -12,7 +12,7 @@ endif
 COMPOSE     := $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down build install shell logs test verify-http cache-clear link-bundle update-bundle ensure-up restart release-check
+.PHONY: help up down build install shell logs test verify-http cache-clear link-bundle update-bundle ensure-up restart release-check test-e2e
 
 help:
 	@echo "Symfony 8 demo — WordToPdfBundle"
@@ -104,3 +104,16 @@ release-check: ensure-up update-bundle test verify-http
 BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
 # Optional: monorepo helper absent on standalone GitHub Actions checkout (REQ-MAKE-009).
 -include $(BUNDLE_ROOT)/../.scripts/Makefile.demo-update-deps.mk
+
+# REQ-DEMO-013: Playwright e2e (official Playwright image; the image tag follows the exact @playwright/test version pinned in e2e/package.json).
+PLAYWRIGHT_VERSION := $(shell sed -n 's/.*"@playwright\/test": "\([0-9.]*\)".*/\1/p' e2e/package.json)
+PLAYWRIGHT_IMAGE ?= mcr.microsoft.com/playwright:v$(PLAYWRIGHT_VERSION)-jammy
+
+test-e2e: ensure-up
+	@mkdir -p e2e/node_modules
+	@PORT=$${DEMO_PORT:-$$(grep -E '^PORT=' .env 2>/dev/null | cut -d= -f2)}; PORT=$${PORT:-8022}; \
+	docker run --rm --network host --user "$$(id -u):$$(id -g)" -e HOME=/tmp \
+		-v "$(CURDIR)/e2e:/e2e" -w /e2e \
+		-e DEMO_BASE_URL=http://127.0.0.1:$$PORT \
+		$(PLAYWRIGHT_IMAGE) \
+		bash -lc 'npm ci --no-fund --no-audit && npx playwright test --project=chromium'
